@@ -7,7 +7,7 @@ from filter import is_clean
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 DB_PATH = 'data.db'
 
@@ -117,4 +117,4 @@ def handle_message(data):
 
 if __name__ == '__main__':
     init_db()
-    socketio.run(app, debug=True, host='0.0.0.0', port=2007)
+    socketio.run(app, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
