@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PopChats - Anonymous Chatting</title>
+    <meta name="description" content="Public and Truly anonymous chatting platform.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="nav">
+        <div class="container nav-wrapper">
+            <div class="logo">Pop<span>Chats</span></div>
+            <div class="nav-links">
+                <a href="/login" class="nav-btn-alt">Chat Now!</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1 class="main-title">Connect Without <span class="accent">Trace.</span></h1>
+            <p class="hero-subtitle">Truly anonymous, secure, and public discussions. No signups, no logs, just freedom of speech.</p>
+            <div class="hero-cta">
+                <button class="primary-btn" onclick="window.location.href='/login'">Get Started, it's Free!</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="features-section">
+        <div class="container grid">
+            <div class="feature-box reveal-left">
+                <div class="feature-icon">🔒</div>
+                <h3>Absolute Privacy</h3>
+                <p>Our platform is built on the principle of total anonymity. We don't track IPs or store metadata. Your identity stays yours.</p>
+            </div>
+            <div class="feature-box reveal-up">
+                <div class="feature-icon">⚡</div>
+                <h3>Ephemeral Chats</h3>
+                <p>Messages exist only as long as they need to. Enjoy temporary, disposable environments that vanish without a trace.</p>
+            </div>
+            <div class="feature-box reveal-right">
+                <div class="feature-icon">🌐</div>
+                <h3>Global Public Hub</h3>
+                <p>Join trending discussions or create your own. Connect with voices from around the world in real-time, instantly.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 PopChats. <a href="https://github.com/NILAY-KS07/NILAY-KS07">Author's Page</a></p>
+        </div>
+    </footer>
+</body>
+</html>

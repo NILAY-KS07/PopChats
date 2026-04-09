@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PopChats | Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="center-mode">
+    <nav class="nav">
+        <div class="container">
+            <a href="/" class="logo">Pop<span>Chats</span></a>
+        </div>
+    </nav>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2>Welcome</h2>
+            <p>Just Enter any Username you like and join the conversation!</p>
+            <form action="/login-user" method="post" class="auth-form">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" name="username" placeholder="e.g. ghost_user" required>
+                </div>
+                <button type="submit" class="primary-btn full-width">Join Chat!</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

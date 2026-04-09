@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PopChats | Live Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body class="chat-mode">
+    <div class="alert-bar">
+        <span>⚠️ Notice: All chats are temporary and <u><b>may be cleared</b></u> when you leave/refresh.</span>
+    </div>
+
+    <div id="join-notif" class="join-toast">
+    <span id="joined-username"></span> joined the room
+</div>
+
+    <nav class="nav chat-nav">
+        <div class="container nav-wrapper">
+            <div class="logo">Pop<span>Chats</span></div>
+            <div class="status-group">
+                <div class="user-count">👥 <span id="count"></span> Online</div>
+                <div class="server-status active"><span></span> Active</div>
+            </div>
+        </div>
+    </nav>
+
+
+    <main class="chat-container">
+        <div id="chat-window" class="chat-window">
+        </div>
+
+        <div id="error-toast" class="error-toast"></div>
+    </main>
+
+    <footer class="chat-input-area">
+        <div class="container">
+            <form class="input-wrapper">
+                <input type="text" id="user-msg" placeholder="Type message..." autocomplete="off">
+                <button type="submit" class="send-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </footer>
+
+<script>
+    const currentUser = "{{ username }}";
+</script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
