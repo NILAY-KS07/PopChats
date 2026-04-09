@@ -1,4 +1,11 @@
-const socket = io();
+const socket = io({
+    transports: ["polling", "websocket"], 
+    upgrade: true,
+    rememberUpgrade: true,
+    reconnectionAttempts: 5,
+    timeout: 10000
+});
+
 const chatWindow = document.getElementById('chat-window');
 const messageForm = document.querySelector('.input-wrapper');
 const messageInput = document.getElementById('user-msg');
