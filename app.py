@@ -9,8 +9,7 @@ from filter import is_clean
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
-app.wsgi_app = socketio.wsgi_app
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 DB_PATH = 'data.db'
 
