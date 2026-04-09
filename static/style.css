@@ -440,12 +440,34 @@ input:focus {
     transform: translateX(-50%) translateY(0);
 }
 
-/* Responsive Design */
+html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; 
+    position: relative;
+}
+
+.chat-mode {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; 
+    height: 100dvh; 
+    overflow: hidden;
+}
+
+/* --- Responsive Design --- */
 @media screen and (max-width: 768px) {
     
+    .container {
+        padding: 0 16px; 
+    }
+
     .main-title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+        line-height: 1.1;
         padding: 0 10px;
+        word-break: keep-all; 
     }
 
     .hero-subtitle {
@@ -457,10 +479,12 @@ input:focus {
         grid-template-columns: 1fr; 
         gap: 15px;
         padding: 20px;
+        min-width: 0; 
     }
 
     .feature-box {
         padding: 25px;
+        width: 100%; 
     }
 
     .chat-container {
@@ -471,7 +495,6 @@ input:focus {
         padding: 10px;
         gap: 12px;
     }
-
 
     .message-wrapper {
         max-width: 90%;
@@ -491,29 +514,56 @@ input:focus {
         font-size: 0.8rem;
     }
 
-
     .auth-card {
         margin: 0 15px;
         padding: 30px 20px;
     }
 
     .chat-input-area {
-        padding: 15px 0;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 10px 0;
+        background: var(--card-bg);
+        border-top: 1px solid var(--border);
+        z-index: 100;
     }
     
     .input-wrapper {
         padding: 0 10px;
         gap: 8px;
+        max-width: 1100px; 
+        margin: 0 auto;
     }
 
     .send-btn {
         width: 45px;
         height: 45px;
         border-radius: 10px;
+        flex-shrink: 0; 
     }
 
     .user-count {
         font-size: 0.75rem;
         padding: 4px 8px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .logo {
+        font-size: 1.5rem; 
+    }
+    
+    .nav-links {
+        gap: 8px;
+    }
+    
+    .user-count {
+        display: none; 
+    }
+    
+    .server-status {
+        font-size: 0.75rem; 
     }
 }
