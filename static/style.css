@@ -560,7 +560,8 @@ html, body {
     }
     
     .user-count {
-        display: none; 
+        font-size: 0.5rem;
+        padding: 2px 4px;
     }
     
     .server-status {
