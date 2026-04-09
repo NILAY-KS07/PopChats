@@ -1,6 +1,6 @@
 const socket = io({
-    transports: ["polling", "websocket"], 
-    upgrade: true,
+    transports: ["websocket"], 
+    upgrade: false,
     rememberUpgrade: true,
     reconnectionAttempts: 5,
     timeout: 10000
