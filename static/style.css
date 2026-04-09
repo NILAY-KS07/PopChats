@@ -423,7 +423,7 @@ input:focus {
     bottom: 12.5%;
     left: 50%;
     transform: translateX(-50%) translateY(-20px);
-    background: #ef4444; /* Professional Red */
+    background: #ef4444; 
     color: white;
     padding: 10px 20px;
     border-radius: 8px;
@@ -548,6 +548,10 @@ html, body {
         font-size: 0.75rem;
         padding: 4px 8px;
     }
+    .alert-bar {
+        padding: 6px;
+        font-size: 0.6rem;
+    }
 }
 
 @media screen and (max-width: 480px) {
@@ -566,5 +570,9 @@ html, body {
     
     .server-status {
         font-size: 0.75rem; 
+    }
+        .alert-bar {
+        padding: 6px;
+        font-size: 0.6rem;
     }
 }
