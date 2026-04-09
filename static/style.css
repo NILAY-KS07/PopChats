@@ -549,8 +549,8 @@ html, body {
         padding: 4px 8px;
     }
     .alert-bar {
-        padding: 6px;
-        font-size: 0.6rem;
+        padding: 5px;
+        font-size: 0.5rem;
     }
 }
 
@@ -564,7 +564,7 @@ html, body {
     }
     
     .user-count {
-        font-size: 0.5rem;
+        font-size: 0.75rem;
         padding: 2px 4px;
     }
     
@@ -572,7 +572,7 @@ html, body {
         font-size: 0.75rem; 
     }
         .alert-bar {
-        padding: 6px;
-        font-size: 0.6rem;
+        padding: 5px;
+        font-size: 0.5rem;
     }
 }
