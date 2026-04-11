@@ -48,17 +48,16 @@ def login_user():
         cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
         user = cursor.fetchone()
 
-        if not user:
-            try:
-                cursor.execute("INSERT INTO users (username) VALUES (?)", (username,))
-                conn.commit()
-                cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-                user = cursor.fetchone()
-            except sqlite3.IntegrityError:
-                return render_template('login.html', error="Username taken.")
+        if user:
+            return render_template('login.html', error="Username is currently active. Choose a different one!")
 
-        session['username'] = user['username']
-        
+        try:
+            cursor.execute("INSERT INTO users (username) VALUES (?)", (username,))
+            conn.commit()
+        except sqlite3.IntegrityError:
+            return render_template('login.html', error="Username taken.")
+
+    session['username'] = username
     return redirect(url_for('chat'))
 
 @app.route('/chat')
@@ -69,22 +68,33 @@ def chat():
 
 #-----SocketIO Events-----#
 
-connected_users = 0
+active_sockets = {}
 
 @socketio.on('connect')
 def handle_connect():
-    global connected_users
-    connected_users += 1
     username = session.get('username')
-    emit('update_count', {'count': connected_users}, broadcast=True)
     if username:
+        active_sockets[request.sid] = username
+        unique_count = len(set(active_sockets.values()))
+        emit('update_count', {'count': unique_count}, broadcast=True)
         emit('user_joined', {'username': username}, broadcast=True)
+
+        with get_db() as conn:
+            conn.execute("INSERT OR IGNORE INTO users (username) VALUES (?)", (username,))
+            conn.commit()
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    global connected_users
-    connected_users = max(0, connected_users - 1)
-    emit('update_count', {'count': connected_users}, broadcast=True)
+    username = active_sockets.pop(request.sid, None)
+    
+    if username:
+        if username not in active_sockets.values():
+            with get_db() as conn:
+                conn.execute("DELETE FROM users WHERE username = ?", (username,))
+                conn.commit()
+
+        unique_count = len(set(active_sockets.values()))
+        emit('update_count', {'count': unique_count}, broadcast=True)
 
 last_message_times = {}
 
