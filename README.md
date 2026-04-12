@@ -1,4 +1,4 @@
-# PopChats: High-Concurrency Real-Time Chat
+# PopChats: Real-Time Concurrent Chat System
 
 PopChats is a real-time messaging platform built using the **Flask** ecosystem. It leverages asynchronous workers to handle multiple concurrent users, featuring a custom content moderation engine and a mobile-first responsive architecture.
 
