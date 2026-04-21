@@ -31,11 +31,12 @@ PopChats is a real-time messaging platform built using the **Flask** ecosystem. 
 ---
 
 ## Features
-- Real-time messaging (WebSockets)
-- Live online user count
-- Anti-spam cooldown system
-- Profanity filtering
-- Mobile responsive UI
+- **Real-time Messaging:** Low-latency bi-directional communication via WebSockets.
+- **Live Presence Tracking:** Real-time "Online Count" that reflects active socket sessions.
+- **Anti-Spam Engine:** A 2000ms cooldown (throttling) to prevent message flooding and server exhaustion.
+- **Multi-Layered Moderation:** Custom-built filter for usernames and messages to maintain a respectful environment.
+- **Mobile-First UI:** Responsive design built with Vanilla CSS for maximum performance across devices.
+- **Graceful API Routing:** A custom landing page for the Backend URL to guide users toward the official Frontend.
 
 ---
 
