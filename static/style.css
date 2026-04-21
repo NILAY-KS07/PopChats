@@ -257,6 +257,7 @@ body {
 .input-group {
     margin-bottom: 20px;
     text-align: left;
+    gap: 12px;
 }
 
 .input-group label {
