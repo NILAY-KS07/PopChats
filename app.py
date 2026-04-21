@@ -2,13 +2,17 @@ from gevent import monkey
 monkey.patch_all()
 import sqlite3
 import os
-from flask import Flask, render_template, request, redirect, url_for, session
-from flask_socketio import SocketIO, emit
 import time
+from flask import Flask, request, jsonify
+from flask_socketio import SocketIO, emit
+from flask_cors import CORS
 from filter import is_clean
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
+
+CORS(app)
+
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 DB_PATH = 'data.db'
@@ -29,19 +33,34 @@ def init_db():
         ''')
         conn.commit()
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+# --- API ROUTES ---
 
-@app.route('/login')
-def login():    
-    return render_template('login.html')
+@app.route('/')
+def home():
+    """Professional landing page for direct backend visits."""
+    return """
+    <div style="font-family: 'Inter', sans-serif; text-align: center; margin-top: 100px; background: #0f1115; color: white; height: 100vh; padding-top: 50px;">
+        <h1 style="color: #3b82f6;">PopChats API</h1>
+        <p style="color: #94a3b8;">Status: <span style="color: #22c55e;">Active</span></p>
+        <p>Please access the chat via the main frontend:</p>
+        <a href="https://your-app.vercel.app" style="color: #3b82f6; text-decoration: none; border: 1px solid #3b82f6; padding: 10px 20px; border-radius: 5px;">Go to PopChats</a>
+    </div>
+    """, 200
+
+@app.route('/ping')
+def ping():
+    """Endpoint for the frontend to wake up the server on load."""
+    return jsonify({"status": "awake"}), 200
 
 @app.route('/login-user', methods=['POST'])
 def login_user():
-    username = request.form.get('username').strip()
+    data = request.get_json()
+    if not data or 'username' not in data:
+        return jsonify({"error": "Invalid request"}), 400
+
+    username = data.get('username').strip()
     if not username:
-        return render_template('login.html', error="Username is required")
+        return jsonify({"error": "Username is required"}), 400
 
     with get_db() as conn:
         cursor = conn.cursor()
@@ -49,33 +68,29 @@ def login_user():
         user = cursor.fetchone()
 
         if user:
-            return render_template('login.html', error="Username is currently active. Choose a different one!")
+            return jsonify({"error": "Username is currently active. Choose a different one!"}), 400
 
         try:
             cursor.execute("INSERT INTO users (username) VALUES (?)", (username,))
             conn.commit()
         except sqlite3.IntegrityError:
-            return render_template('login.html', error="Username taken.")
+            return jsonify({"error": "Username taken."}), 400
 
-    session['username'] = username
-    return redirect(url_for('chat'))
+    return jsonify({"success": True}), 200
 
-@app.route('/chat')
-def chat():
-    if 'username' not in session:
-        return redirect(url_for('login'))
-    return render_template('chat.html', username=session['username'])
-
-#-----SocketIO Events-----#
+# --- SOCKET.IO EVENTS ---
 
 active_sockets = {}
+last_message_times = {}
 
 @socketio.on('connect')
 def handle_connect():
-    username = session.get('username')
+    username = request.args.get('username')
+    
     if username:
         active_sockets[request.sid] = username
         unique_count = len(set(active_sockets.values()))
+
         emit('update_count', {'count': unique_count}, broadcast=True)
         emit('user_joined', {'username': username}, broadcast=True)
 
@@ -96,15 +111,14 @@ def handle_disconnect():
         unique_count = len(set(active_sockets.values()))
         emit('update_count', {'count': unique_count}, broadcast=True)
 
-last_message_times = {}
-
 @socketio.on('send_message')
 def handle_message(data):
-    username = session.get('username')
+    username = active_sockets.get(request.sid)
     message_content = data.get('message', '').strip()
     current_time = time.time()
 
     if not username:
+        emit('error_message', {'error': 'Authentication failed. Please re-login.'})
         return 
 
     last_time = last_message_times.get(username, 0)
@@ -113,6 +127,7 @@ def handle_message(data):
         return
 
     if message_content and len(message_content) <= 500:
+        # Profanity Filter
         if not is_clean(message_content):
             emit('error_message', {'error': 'Kindly avoid using such words to maintain a respectful environment.'})
             return
@@ -129,4 +144,5 @@ def handle_message(data):
 
 if __name__ == '__main__':
     init_db()
-    socketio.run(app, host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
+    port = int(os.environ.get("PORT", 5000))
+    socketio.run(app, host='0.0.0.0', port=port)
