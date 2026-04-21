@@ -11,9 +11,15 @@ from filter import is_clean
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
 
-CORS(app)
+origins = ["https://pop-chats.vercel.app"]
 
-socketio = SocketIO(app, cors_allowed_origins="https://pop-chats.vercel.app/", async_mode='gevent')
+CORS(app, resources={r"/*": {"origins": origins}})
+
+socketio = SocketIO(
+    app, 
+    cors_allowed_origins=origins, 
+    async_mode='gevent'
+)
 
 DB_PATH = 'data.db'
 
