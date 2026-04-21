@@ -47,7 +47,7 @@ if (loginForm) {
         } catch (err) {
             loginForm.style.display = 'block';
             loader.style.display = 'none';
-            errorDiv.innerText = "The server is taking its time to wake up. Try again?";
+            errorDiv.innerText = "Something went wrong! Try Again?";
             errorDiv.style.display = 'block';
         }
     };
