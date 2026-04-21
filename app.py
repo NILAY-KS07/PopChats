@@ -13,7 +13,7 @@ app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
 
 CORS(app)
 
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
+socketio = SocketIO(app, cors_allowed_origins="https://pop-chats.vercel.app/", async_mode='gevent')
 
 DB_PATH = 'data.db'
 
@@ -43,7 +43,7 @@ def home():
         <h1 style="color: #3b82f6;">PopChats API</h1>
         <p style="color: #94a3b8;">Status: <span style="color: #22c55e;">Active</span></p>
         <p>Please access the chat via the main frontend:</p>
-        <a href="https://your-app.vercel.app" style="color: #3b82f6; text-decoration: none; border: 1px solid #3b82f6; padding: 10px 20px; border-radius: 5px;">Go to PopChats</a>
+        <a href="https://pop-chats.vercel.app/" style="color: #3b82f6; text-decoration: none; border: 1px solid #3b82f6; padding: 10px 20px; border-radius: 5px;">Go to PopChats</a>
     </div>
     """, 200
 
