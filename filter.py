@@ -1,31 +1,24 @@
 import os
 import re
 
-def load_banned_words():
+def load_and_prep_banned():
     file_path = os.path.join(os.path.dirname(__file__), 'banned.txt')
     if not os.path.exists(file_path):
         return []
+    
     with open(file_path, 'r', encoding='utf-8') as f:
-        return [line.strip().lower() for line in f if line.strip()]
-
-BANNED_WORDS = load_banned_words()
-
-def normalize(text):
-    text = text.lower()
-    text = re.sub(r'[^a-z0-9\s]', '', text)
-    text = re.sub(r'(.)\1+', r'\1', text)
-    text = re.sub(r'\s+', ' ', text).strip()
-    return text
-
-
-NORMALIZED_BANNED = [normalize(word) for word in BANNED_WORDS]
-BANNED_SET = set(NORMALIZED_BANNED)
-
+        return [re.sub(r'[^a-z0-9]', '', line.strip().lower()) for line in f if line.strip()]
+        
+BANNED_WORDS_CACHE = load_and_prep_banned()
 
 def is_clean(text):
-    normalized_text = normalize(text)
-    padded = f" {normalized_text} "
-    for word in BANNED_SET:
-        if f" {word} " in padded:
+    if not text: return True
+        
+    clean_msg = re.sub(r'[^a-z0-9]', '', text.lower())
+    squashed_msg = re.sub(r'(.)\1+', r'\1', clean_msg)
+    for word in BANNED_WORDS_CACHE:
+        if len(word) < 3: continue
+        
+        if word in clean_msg or word in squashed_msg:
             return False
     return True
