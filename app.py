@@ -45,7 +45,7 @@ def init_db():
 def home():
     return """
     <body style="padding:0;margin:0;">
-    <div style="font-family: 'Inter', sans-serif; text-align: center; margin-top: 100px; background: #0f1115; color: white; height: 100vh; padding-top: 50px;">
+    <div style="font-family: 'Inter', sans-serif; text-align: center; margin-top: 0px; background: #0f1115; color: white; height: 100vh; padding-top: 50px;">
         <h1 style="color: #3b82f6;">PopChats API</h1>
         <p style="color: #94a3b8;">Status: <span style="color: #22c55e;">Active</span></p>
         <p>Please access the chat via the link below:</p>
