@@ -8,6 +8,11 @@
     <link rel="icon" type="image/png" href="static/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
+<script>
+    if (!localStorage.getItem('username')) {
+        window.location.href = 'login.html'; 
+    }
+</script>
 <body class="chat-mode">
     <div class="alert-bar">
         <span>⚠️ Notice: All chats are temporary and <u><b>may be cleared</b></u> when you leave/refresh.</span>
