@@ -11,7 +11,7 @@ from filter import is_clean
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
 
-origins = ["https://pop-chats.vercel.app"]
+origins = ["https://popchats.vercel.app"]
 
 CORS(app, resources={r"/*": {"origins": origins}})
 
@@ -49,7 +49,7 @@ def home():
         <h1 style="color: #3b82f6;">PopChats API</h1>
         <p style="color: #94a3b8;">Status: <span style="color: #22c55e;">Active</span></p>
         <p>Please access the chat via the link below:</p>
-        <a href="https://pop-chats.vercel.app/" style="color: #3b82f6; text-decoration: none; border: 1px solid #3b82f6; padding: 10px 20px; border-radius: 5px;">Go to PopChats</a>
+        <a href="https://popchats.vercel.app/" style="color: #3b82f6; text-decoration: none; border: 1px solid #3b82f6; padding: 10px 20px; border-radius: 5px;">Go to PopChats</a>
     </div>
     </body>
     """, 200
