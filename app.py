@@ -56,7 +56,6 @@ def home():
 
 @app.route('/ping')
 def ping():
-    """Endpoint for the frontend to wake up the server on load."""
     return jsonify({"status": "awake"}), 200
 
 @app.route('/login-user', methods=['POST'])
@@ -66,22 +65,24 @@ def login_user():
         return jsonify({"error": "Invalid request"}), 400
 
     username = data.get('username').strip()
-    if not username:
-        return jsonify({"error": "Username is required"}), 400
+
+    if not username or len(username) < 3 or len(username) > 50:
+        return jsonify({"error": "Username must be of optimal length. Neither too long nor too short!"}), 400
+
+    if not is_clean(username):
+        return jsonify({"error": "Kindly avoid using such names to maintain a respectful environment."}), 400
 
     with get_db() as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-        user = cursor.fetchone()
 
-        if user:
-            return jsonify({"error": "Username is currently active. Choose a different one!"}), 400
-
+        cursor.execute("SELECT 1 FROM users WHERE username = ?", (username,))
+        if cursor.fetchone():
+            return jsonify({"error": "Username is currently active. Choose another!"}), 400
         try:
             cursor.execute("INSERT INTO users (username) VALUES (?)", (username,))
             conn.commit()
         except sqlite3.IntegrityError:
-            return jsonify({"error": "Username taken."}), 400
+            return jsonify({"error": "Username is taken."}), 400
 
     return jsonify({"success": True}), 200
 
@@ -93,15 +94,11 @@ last_message_times = {}
 @socketio.on('connect')
 def handle_connect():
     username = request.args.get('username')
-    if not username or username in ["null", "undefined", "None"]:
-        return False  
+
+    if not username or username in ["null", "undefined", "None"] or not is_clean(username):
+        return False 
 
     active_sockets[request.sid] = username
-
-    with get_db() as conn:
-        conn.execute("INSERT OR IGNORE INTO users (username) VALUES (?)", (username,))
-        conn.commit()
-        
     unique_count = len(set(active_sockets.values()))
     emit('update_count', {'count': unique_count}, broadcast=True)
     emit('user_joined', {'username': username}, broadcast=True)
@@ -117,7 +114,6 @@ def handle_disconnect():
                 conn.commit()
             unique_count = len(set(active_sockets.values()))
             emit('update_count', {'count': unique_count}, broadcast=True)
-            print(f"User {username} fully disconnected and removed from DB.")
 
 @socketio.on('send_message')
 def handle_message(data):
@@ -135,7 +131,6 @@ def handle_message(data):
         return
 
     if message_content and len(message_content) <= 500:
-        # Profanity Filter
         if not is_clean(message_content):
             emit('error_message', {'error': 'Kindly avoid using such words to maintain a respectful environment.'})
             return
