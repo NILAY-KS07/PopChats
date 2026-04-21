@@ -92,18 +92,19 @@ last_message_times = {}
 @socketio.on('connect')
 def handle_connect():
     username = request.args.get('username')
+    if not username or username in ["null", "undefined", "None"]:
+        return False  
+
+    active_sockets[request.sid] = username
+
+    with get_db() as conn:
+        conn.execute("INSERT OR IGNORE INTO users (username) VALUES (?)", (username,))
+        conn.commit()
+        
+    unique_count = len(set(active_sockets.values()))
+    emit('update_count', {'count': unique_count}, broadcast=True)
+    emit('user_joined', {'username': username}, broadcast=True)
     
-    if username:
-        active_sockets[request.sid] = username
-        unique_count = len(set(active_sockets.values()))
-
-        emit('update_count', {'count': unique_count}, broadcast=True)
-        emit('user_joined', {'username': username}, broadcast=True)
-
-        with get_db() as conn:
-            conn.execute("INSERT OR IGNORE INTO users (username) VALUES (?)", (username,))
-            conn.commit()
-
 @socketio.on('disconnect')
 def handle_disconnect():
     username = active_sockets.pop(request.sid, None)
@@ -113,9 +114,9 @@ def handle_disconnect():
             with get_db() as conn:
                 conn.execute("DELETE FROM users WHERE username = ?", (username,))
                 conn.commit()
-
-        unique_count = len(set(active_sockets.values()))
-        emit('update_count', {'count': unique_count}, broadcast=True)
+            unique_count = len(set(active_sockets.values()))
+            emit('update_count', {'count': unique_count}, broadcast=True)
+            print(f"User {username} fully disconnected and removed from DB.")
 
 @socketio.on('send_message')
 def handle_message(data):
