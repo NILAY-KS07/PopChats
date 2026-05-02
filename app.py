@@ -71,6 +71,13 @@ def home():
 def ping():
     return jsonify({"status": "awake"}), 200
 
+@app.route("/health")
+def health():
+    return {
+        "ENV": ENV,
+        "has_secret": bool(os.environ.get("SECRET_KEY"))
+    }
+
 @app.route('/login-user', methods=['POST'])
 def login_user():
     data = request.get_json()
