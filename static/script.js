@@ -1,13 +1,21 @@
-const API_BASE_URL = "https://popchats.onrender.com";
+const hostname = window.location.hostname;
+
+const isLocal =
+  hostname === "localhost" ||
+  hostname === "127.0.0.1" ||
+  hostname.startsWith("192.168.");
+
+const API_BASE_URL = isLocal
+  ? `${window.location.protocol}//${hostname}:5000`
+  : "https://popchats.onrender.com";
+
 fetch(`${API_BASE_URL}/ping`).catch(() => {});
 
 const socket = io(API_BASE_URL, {
     query: {
         username: localStorage.getItem('username') 
     },
-    transports: ["websocket"], 
-    upgrade: false,
-    rememberUpgrade: true,
+    transports: ["websocket", "polling"], 
     reconnectionAttempts: 5,
     timeout: 10000
 });

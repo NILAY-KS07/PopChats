@@ -9,14 +9,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <script>
-    if (!localStorage.getItem('username')) {
-        window.location.href = 'login.html'; 
-    }
+    setTimeout(() => {
+        const username = localStorage.getItem('username');
+
+        if (!username || username === "null" || username === "undefined") {
+            window.location.href = 'login.html';
+        }
+    }, 500);
 </script>
 <body class="chat-mode">
-    <div class="alert-bar">
-        <span>⚠️ Notice: All chats are temporary and <u><b>may be cleared</b></u> when you leave/refresh.</span>
-    </div>
 
     <div id="join-notif" class="join-toast">
     <span id="joined-username"></span> joined the room
@@ -26,11 +27,33 @@
         <div class="container nav-wrapper">
             <div class="logo">Pop<span>Chats</span></div>
             <div class="status-group">
+                <div class="info">i</div>
                 <div class="user-count">👥 <span id="count"></span> Online</div>
                 <div class="server-status active"><span></span> Active</div>
             </div>
         </div>
     </nav>
+        <div class="alert-bar">
+        <span>⚠️ Notice: All chats are temporary and <u><b>may be cleared</b></u> when you leave/refresh.</span>
+        <script>
+            const info = document.querySelector('.info');
+            const alertBar = document.querySelector('.alert-bar');
+
+            setTimeout(() => {
+                alertBar.style.opacity = '0';
+            }, 10000);
+
+            info.addEventListener('mouseenter', () => {
+                alertBar.style.opacity = '1';
+                alertBar.style.pointerEvents = 'auto';
+            });
+
+            info.addEventListener('mouseleave', () => {
+                alertBar.style.opacity = '0';
+                alertBar.style.pointerEvents = 'none';
+            });
+        </script>
+    </div>
 
 
     <main class="chat-container">

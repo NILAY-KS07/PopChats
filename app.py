@@ -7,11 +7,24 @@ from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from filter import is_clean
+import json
+
+print("Server Started", flush=True)
+
+ENV = os.environ.get("ENV", "development")
+
+with open("config.json") as f:
+    config = json.load(f)[ENV]
+
+if ENV == "development":
+    origins = "*"
+else:
+    origins = config["ALLOWED_ORIGINS"]
+
+PORT = config["PORT"]
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
-
-origins = ["https://popchats.vercel.app"]
 
 CORS(app, resources={r"/*": {"origins": origins}})
 
@@ -147,5 +160,5 @@ def handle_message(data):
 
 if __name__ == '__main__':
     init_db()
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", PORT))
     socketio.run(app, host='0.0.0.0', port=port)
