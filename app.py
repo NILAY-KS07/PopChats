@@ -24,7 +24,7 @@ else:
 PORT = config["PORT"]
 
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
+app.secret_key = os.environ.get('SECRET_KEY')
 
 CORS(app, resources={r"/*": {"origins": origins}})
 
