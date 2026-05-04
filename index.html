@@ -54,6 +54,26 @@
             <p>&copy; <span id="year">2026</span> PopChats. Main Author: <a href="https://github.com/NILAY-KS07/NILAY-KS07">N K Shrivastava</a>. Co-Author: Neel Gupta. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms</a></p>
         </div>
     </footer>
-    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Scroll Reveal logic (Framer Motion style)
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-left, .reveal-right, .reveal-up').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
 </body>
 </html>

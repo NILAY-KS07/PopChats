@@ -6,7 +6,8 @@
     --text-main: #f8fafc;
     --text-dim: #94a3b8;
     --border: #2d333b;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --transition-smooth: all 0.3s ease;
 }
 
 ::-webkit-scrollbar {
@@ -295,23 +296,33 @@ input:focus {
 }
 
 @keyframes slideInLeft {
-    from { opacity: 0; transform: translateX(-50px); }
-    to { opacity: 1; transform: translateX(0); }
+    from { opacity: 0; transform: translateX(-30px) scale(0.95); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
 }
 
 @keyframes slideInRight {
-    from { opacity: 0; transform: translateX(50px); }
-    to { opacity: 1; transform: translateX(0); }
+    from { opacity: 0; transform: translateX(30px) scale(0.95); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
 }
 
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.reveal-left { animation: slideInLeft 0.8s ease forwards; }
-.reveal-right { animation: slideInRight 0.8s ease forwards; }
-.reveal-up { animation: slideUp 0.8s ease forwards; }
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.reveal-left, .reveal-right, .reveal-up { 
+    opacity: 0; 
+    transition: var(--transition);
+}
+
+.reveal-left.visible { animation: slideInLeft 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+.reveal-right.visible { animation: slideInRight 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+.reveal-up.visible { animation: slideUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
 .footer {
     text-align: center;
@@ -444,6 +455,8 @@ input:focus {
     border-radius: 4px 18px 18px 18px;
     border: 1px solid var(--border);
     font-size: 0.95rem;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    transform-origin: left bottom;
 }
 
 .me .msg-box {
@@ -451,6 +464,7 @@ input:focus {
     color: white;
     border: none;
     border-radius: 18px 4px 18px 18px;
+    transform-origin: right bottom;
 }
 
 .join-toast {
