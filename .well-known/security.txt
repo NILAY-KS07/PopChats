@@ -1,0 +1,6 @@
+Contact: mailto:security-demo@popchats.com
+Expires: 2027-05-01T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://popchats.vercel.app/.well-known/security.txt
+Policy: https://popchats.vercel.app/privacy.html
+Acknowledgments: https://github.com/NILAY-KS07/NILAY-KS07

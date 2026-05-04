@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Privacy Policy | PopChats</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="icon" type="image/png" href="static/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .content-page { padding: 100px 20px; color: #e2e8f0; line-height: 1.6; min-height: 100vh; background: #0f1115; }
+        .content-container { max-width: 800px; margin: 0 auto; background: #1a1d23; padding: 40px; border-radius: 12px; border: 1px solid #2d3748; }
+        h1 { color: #3b82f6; margin-bottom: 20px; }
+        h2 { color: #60a5fa; margin-top: 30px; margin-bottom: 15px; }
+        p { margin-bottom: 15px; }
+        ul { margin-bottom: 15px; padding-left: 20px; }
+        li { margin-bottom: 8px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #3b82f6; text-decoration: none; font-weight: 600; }
+        .back-link:hover { text-decoration: underline; }
+        .footer { background: #0f1115; padding: 40px 0; border-top: 1px solid #2d3748; text-align: center; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="container">
+            <a href="index.html" class="logo">Pop<span>Chats</span></a>
+        </div>
+    </nav>
+
+    <main class="content-page">
+        <div class="content-container">
+            <a href="index.html" class="back-link">← Back to Home</a>
+            <h1>Privacy Policy</h1>
+            <p>Last Updated: May 2026</p>
+            
+            <p>At PopChats, we take your privacy seriously. This platform is designed to be truly anonymous and ephemeral.</p>
+            
+            <h2>1. Information We Do NOT Collect</h2>
+            <p>We do not collect or store any of the following:</p>
+            <ul>
+                <li>Your real name, email address, or phone number.</li>
+                <li>Your physical location.</li>
+                <li>Chat logs or message history after a session ends.</li>
+                <li>Browser cookies for tracking or advertising.</li>
+            </ul>
+
+            <h2>2. Data Usage</h2>
+            <p>We only use minimal data to ensure the service works:</p>
+            <ul>
+                <li><strong>Usernames:</strong> Stored temporarily in an SQLite database to ensure uniqueness.</li>
+                <li><strong>IP Address:</strong> Used in memory for 2-second rate-limiting to prevent spam. We do not log these permanently.</li>
+                <li><strong>Local Storage:</strong> Used to save your username locally so you can stay in the chat room during your session.</li>
+            </ul>
+
+            <h2>3. Author & Credits</h2>
+            <p>PopChats was conceived and created by <strong>N K Shrivastava</strong>. The project was further refined and secured with the assistance of his friend to ensure a safe environment for all users.</p>
+
+            <h2>4. Security</h2>
+            <p>We implement modern security practices, including XSS protection and rate-limiting, to keep the chat environment safe from malicious scripts and spam.</p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span id="year">2026</span> PopChats. Main Author: <a href="https://github.com/NILAY-KS07/NILAY-KS07">N K Shrivastava</a>. Co-Author: Neel Gupta. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms</a></p>
+        </div>
+    </footer>
+    <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
