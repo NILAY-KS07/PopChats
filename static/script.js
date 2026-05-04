@@ -1,5 +1,22 @@
 const hostname = window.location.hostname;
 
+// Added a utility function to sanitize HTML before we inject it into the DOM.
+// This is critical to prevent Cross-Site Scripting (XSS) attacks. Without this, 
+// a malicious user could send a message containing <script> tags or malformed HTML
+// and it would execute in everyone's browser, potentially stealing data or crashing the app.
+const escapeHTML = (str) => {
+    if (!str) return "";
+    return str.toString().replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
+};
+
 const isLocal =
   hostname === "localhost" ||
   hostname === "127.0.0.1" ||
@@ -98,8 +115,8 @@ if (messageForm) {
         const isMe = data.username === currentUser;
         const msgHtml = `
             <div class="message-wrapper ${isMe ? 'me' : ''}">
-                <span class="msg-username">${isMe ? 'You' : data.username}</span>
-                <div class="msg-box">${data.message}</div>
+                <span class="msg-username">${isMe ? 'You' : escapeHTML(data.username)}</span>
+                <div class="msg-box">${escapeHTML(data.message)}</div>
             </div>
         `;
         

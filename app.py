@@ -50,6 +50,12 @@ def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         ''')
+        
+        # We clear the users table on startup to fix a persistent database lockout bug.
+        # If the server crashes or restarts, all active WebSocket connections are dropped,
+        # but the users remain in the SQLite database. Clearing it ensures no one is permanently
+        # locked out of their preferred username due to a stale database entry.
+        conn.execute('DELETE FROM users')
         conn.commit()
 
 # --- API ROUTES ---
@@ -111,12 +117,36 @@ def login_user():
 active_sockets = {}
 last_message_times = {}
 
+# A helper function to extract the real IP address of the user. 
+# Since this app is deployed behind a proxy (like Render or Heroku),
+# request.remote_addr will just return the proxy's IP. We check 'X-Forwarded-For'
+# to ensure we rate limit the actual user, not the server itself!
+def get_client_ip():
+    ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+    if ip and ',' in ip:
+        ip = ip.split(',')[0].strip()
+    return ip
+
 @socketio.on('connect')
 def handle_connect():
     username = request.args.get('username')
 
     if not username or username in ["null", "undefined", "None"] or not is_clean(username):
         return False 
+        
+    # Security fix: Prevent Impersonation and Duplicate Sessions.
+    # First, we ensure the username isn't already active in the current socket dictionary.
+    if username in active_sockets.values():
+        return False
+        
+    # Second, we verify that this username actually exists in the database.
+    # This prevents malicious actors from bypassing the /login-user endpoint 
+    # and directly connecting to the WebSocket with an arbitrary username.
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1 FROM users WHERE username = ?", (username,))
+        if not cursor.fetchone():
+            return False
 
     active_sockets[request.sid] = username
     unique_count = len(set(active_sockets.values()))
@@ -126,6 +156,12 @@ def handle_connect():
 @socketio.on('disconnect')
 def handle_disconnect():
     username = active_sockets.pop(request.sid, None)
+    ip = get_client_ip()
+    
+    # We clear the user's IP from the cooldown dictionary when they leave.
+    # This prevents a slow memory leak where the dictionary grows infinitely 
+    # as thousands of unique IPs connect and disconnect over time.
+    last_message_times.pop(ip, None)
     
     if username:
         if username not in active_sockets.values():
@@ -140,12 +176,16 @@ def handle_message(data):
     username = active_sockets.get(request.sid)
     message_content = data.get('message', '').strip()
     current_time = time.time()
+    ip = get_client_ip()
 
     if not username:
         emit('error_message', {'error': 'Authentication failed. Please re-login.'})
         return 
 
-    last_time = last_message_times.get(username, 0)
+    # We now tie the spam cooldown to the user's IP address instead of their username.
+    # This patches a vulnerability where a user could bypass the 2-second rate limit
+    # simply by opening multiple tabs with different usernames.
+    last_time = last_message_times.get(ip, 0)
     if current_time - last_time < 2:
         emit('error_message', {'error': 'Slow down! 2s cooldown active.'})
         return
@@ -155,7 +195,7 @@ def handle_message(data):
             emit('error_message', {'error': 'Kindly avoid using such words to maintain a respectful environment.'})
             return
 
-        last_message_times[username] = current_time
+        last_message_times[ip] = current_time
 
         emit('receive_message', {
             'username': username,
