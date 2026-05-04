@@ -493,6 +493,23 @@ input:focus {
     border-top: 1px solid var(--border);
 }
 
+.typing-indicator {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 30px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-style: italic;
+    height: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    transform: translateY(-10px);
+}
+
+.typing-indicator.show {
+    opacity: 1;
+}
+
 .input-wrapper {
     display: flex;
     gap: 12px;

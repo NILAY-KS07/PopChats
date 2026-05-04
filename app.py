@@ -214,6 +214,13 @@ def handle_message(data):
     elif len(message_content) > 500:
         emit('error_message', {'error': 'Message too long (Max 500 chars).'})
 
+@socketio.on('typing')
+def handle_typing(data):
+    username = active_sockets.get(request.sid)
+    if username:
+        # Broadcast to all clients EXCEPT the sender
+        emit('user_typing', {'username': username}, broadcast=True, include_self=False)
+
 if __name__ == '__main__':
     init_db()
     port = int(os.environ.get("PORT", PORT))

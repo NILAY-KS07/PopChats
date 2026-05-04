@@ -171,4 +171,48 @@ if (messageForm) {
             setTimeout(() => errorNotif.classList.remove('show'), 3000);
         }
     });
+
+    // --- Typing Indicator Logic ---
+    const typingIndicator = document.getElementById('typing-indicator');
+    let typingUsers = new Set();
+    let typingTimeouts = {};
+
+    if (messageInput) {
+        messageInput.addEventListener('input', () => {
+            socket.emit('typing', {});
+        });
+    }
+
+    socket.on('user_typing', (data) => {
+        if (!typingIndicator) return;
+        
+        const username = data.username;
+        typingUsers.add(username);
+        updateTypingIndicator();
+
+        // Clear existing timeout for this specific user
+        if (typingTimeouts[username]) {
+            clearTimeout(typingTimeouts[username]);
+        }
+
+        // Remove user from "typing" set after 3 seconds of inactivity
+        typingTimeouts[username] = setTimeout(() => {
+            typingUsers.delete(username);
+            delete typingTimeouts[username];
+            updateTypingIndicator();
+        }, 3000);
+    });
+
+    function updateTypingIndicator() {
+        if (typingUsers.size === 0) {
+            typingIndicator.innerText = '';
+            typingIndicator.classList.remove('show');
+        } else if (typingUsers.size === 1) {
+            typingIndicator.innerText = `${Array.from(typingUsers)[0]} is typing...`;
+            typingIndicator.classList.add('show');
+        } else {
+            typingIndicator.innerText = 'Multiple people are typing...';
+            typingIndicator.classList.add('show');
+        }
+    }
 };
