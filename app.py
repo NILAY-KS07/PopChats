@@ -73,6 +73,15 @@ def home():
     </body>
     """, 200
 
+@app.errorhandler(404)
+def page_not_found(e):
+    # If the user visits an undefined route, serve the custom 404 page.
+    # We check if 404.html exists, otherwise return a default JSON error.
+    if os.path.exists('404.html'):
+        with open('404.html', 'r', encoding='utf-8') as f:
+            return f.read(), 404
+    return jsonify({"error": "Resource not found"}), 404
+
 @app.route('/ping')
 def ping():
     return jsonify({"status": "awake"}), 200

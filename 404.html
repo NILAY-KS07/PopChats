@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>404 - Page Not Found | PopChats</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="icon" type="image/png" href="static/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .error-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+            background: #0f1115;
+        }
+        .error-code {
+            font-size: 10rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -5px;
+        }
+        .error-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #f8fafc;
+        }
+        .error-message {
+            color: #94a3b8;
+            max-width: 500px;
+            margin-bottom: 30px;
+        }
+        .back-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            background: #2563eb;
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="container">
+            <a href="index.html" class="logo">Pop<span>Chats</span></a>
+        </div>
+    </nav>
+
+    <main class="error-page">
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">Trace Not Found.</h2>
+        <p class="error-message">The page you're looking for has vanished into thin air, just like an ephemeral chat. It either never existed or has been deleted.</p>
+        <a href="index.html" class="back-btn">Go Back Home</a>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; <span id="year">2026</span> PopChats. Main Author: <a href="https://github.com/NILAY-KS07/NILAY-KS07">N K Shrivastava</a>. Co-Author: Neel Gupta. | <a href="privacy.html">Privacy Policy</a> | <a href="terms.html">Terms</a></p>
+        </div>
+    </footer>
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
