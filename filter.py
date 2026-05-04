@@ -9,7 +9,7 @@ file_path = os.path.join(os.path.dirname(__file__), 'banned.txt')
 if os.path.exists(file_path):
     # This library is smart: it handles variations (like b.a.d) and 
     # respects word boundaries to avoid the Scunthorpe problem.
-    profanity.add_censor_words_from_file(file_path)
+    profanity.load_censor_words_from_file(file_path)
 
 def is_clean(text):
     """

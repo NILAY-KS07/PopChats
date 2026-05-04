@@ -39,14 +39,7 @@ span, p, h1, h2, h3, div {
     word-break: break-word;
 }
 
-body {
-    background-color: var(--bg-dark);
-    font-family: 'Inter', sans-serif;
-    color: var(--text-main);
-    line-height: 1.6;
-    overflow-x: hidden;
-    padding-top: 80px;
-}
+
 
 .loader-container {
     display: flex;
@@ -324,12 +317,25 @@ input:focus {
 .reveal-right.visible { animation: slideInRight 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 .reveal-up.visible { animation: slideUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
+body {
+    background-color: var(--bg-dark);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+    padding-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
 .footer {
     text-align: center;
     padding: 40px;
     border-top: 1px solid var(--border);
     color: var(--text-dim);
     font-size: 0.85rem;
+    margin-top: auto;
 }
 
 .chat-mode {
