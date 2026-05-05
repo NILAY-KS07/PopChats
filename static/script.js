@@ -111,33 +111,42 @@ if (messageForm) {
         }
     };
 
+    const reactionsData = {}; // Stores { msgId: { emoji: Set(users) } }
+
     socket.on('receive_message', (data) => {
         const isMe = data.username === currentUser;
         const message = data.message;
+        const msgId = data.msg_id;
         let isMentioned = false;
 
-        // Detect if the current user is mentioned (@Username)
-        // We do this BEFORE escaping for the check, but use the escaped version for display
+        // Detect mentions
         if (currentUser && message.includes(`@${currentUser}`)) {
             isMentioned = true;
-            if (!isMe) { // Don't notify if I mention myself
+            if (!isMe) {
                 showMentionNotification(data.username);
             }
         }
 
-        // 1. Sanitize the message first to prevent XSS
         const sanitizedMsg = escapeHTML(message);
-
-        // 2. Wrap any @mention in a styled span for everyone to see
         const mentionRegex = /@(\w+)/g;
         const highlightedMsg = sanitizedMsg.replace(mentionRegex, (match) => {
             return `<span class="mention-tag">${match}</span>`;
         });
 
+        // Common emojis for the picker
+        const emojis = ['❤️', '😂', '🔥', '😮', '👍'];
+        const pickerHtml = emojis.map(e => `<span class="react-emoji" onclick="sendReaction('${msgId}', '${e}')">${e}</span>`).join('');
+
         const msgHtml = `
-            <div class="message-wrapper ${isMe ? 'me' : ''} ${isMentioned && !isMe ? 'mentioned' : ''}">
+            <div class="message-wrapper ${isMe ? 'me' : ''} ${isMentioned && !isMe ? 'mentioned' : ''}" id="msg-${msgId}">
                 <span class="msg-username">${isMe ? 'You' : escapeHTML(data.username)}</span>
-                <div class="msg-box">${highlightedMsg}</div>
+                <div class="msg-box-wrapper">
+                    <div class="reaction-picker">
+                        ${pickerHtml}
+                    </div>
+                    <div class="msg-box">${highlightedMsg}</div>
+                </div>
+                <div class="reactions-container" id="reactions-${msgId}"></div>
             </div>
         `;
         
@@ -148,6 +157,45 @@ if (messageForm) {
             behavior: 'smooth'
         });
     });
+
+    // Make sendReaction globally accessible for the onclick handlers
+    window.sendReaction = (msgId, emoji) => {
+        socket.emit('add_reaction', { msg_id: msgId, emoji: emoji });
+    };
+
+    socket.on('update_reactions', (data) => {
+        const { msg_id, emoji, username } = data;
+        
+        if (!reactionsData[msg_id]) reactionsData[msg_id] = {};
+        if (!reactionsData[msg_id][emoji]) reactionsData[msg_id][emoji] = new Set();
+        
+        // If user already reacted with this emoji, toggle it off (remove)
+        if (reactionsData[msg_id][emoji].has(username)) {
+            reactionsData[msg_id][emoji].delete(username);
+        } else {
+            reactionsData[msg_id][emoji].add(username);
+        }
+
+        renderReactions(msg_id);
+    });
+
+    function renderReactions(msgId) {
+        const container = document.getElementById(`reactions-${msgId}`);
+        if (!container) return;
+
+        const msgReactions = reactionsData[msgId];
+        container.innerHTML = '';
+
+        for (const [emoji, users] of Object.entries(msgReactions)) {
+            if (users.size > 0) {
+                const badge = document.createElement('div');
+                badge.className = `reaction-badge ${users.has(currentUser) ? 'active' : ''}`;
+                badge.innerHTML = `${emoji} ${users.size}`;
+                badge.onclick = () => sendReaction(msgId, emoji);
+                container.appendChild(badge);
+            }
+        }
+    }
 
     function showMentionNotification(from) {
         const notif = document.getElementById('mention-toast');

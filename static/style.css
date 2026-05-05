@@ -441,6 +441,8 @@ body {
     flex-direction: column;
     align-items: flex-start;
     max-width: 80%;
+    position: relative;
+    margin-bottom: 5px;
 }
 
 .message-wrapper.me {
@@ -471,6 +473,75 @@ body {
     border: none;
     border-radius: 18px 4px 18px 18px;
     transform-origin: right bottom;
+}
+
+/* Reaction Styles */
+.msg-box-wrapper {
+    position: relative;
+}
+
+.reaction-picker {
+    position: absolute;
+    top: -35px;
+    left: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 10px;
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 100;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.me .reaction-picker {
+    left: auto;
+    right: 0;
+}
+
+.msg-box-wrapper:hover .reaction-picker {
+    opacity: 1;
+    visibility: visible;
+    top: -45px;
+}
+
+.react-emoji {
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: transform 0.2s;
+}
+
+.react-emoji:hover {
+    transform: scale(1.3);
+}
+
+.reactions-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.reaction-badge {
+    background: var(--border);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.reaction-badge.active {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: var(--accent);
+}
+
+.reaction-badge:hover {
+    filter: brightness(1.2);
 }
 
 /* Mention Styles */

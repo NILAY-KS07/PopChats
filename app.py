@@ -3,6 +3,7 @@ monkey.patch_all()
 import sqlite3
 import os
 import time
+import uuid
 from flask import Flask, request, jsonify
 from flask_socketio import SocketIO, emit
 from flask_cors import CORS
@@ -195,9 +196,7 @@ def handle_message(data):
         emit('error_message', {'error': 'Authentication failed. Please re-login.'})
         return 
 
-    # We now tie the spam cooldown to the user's IP address instead of their username.
-    # This patches a vulnerability where a user could bypass the 2-second rate limit
-    # simply by opening multiple tabs with different usernames.
+    # Rate limiting (IP-based)
     last_time = last_message_times.get(ip, 0)
     if current_time - last_time < 2:
         emit('error_message', {'error': 'Slow down! 2s cooldown active.'})
@@ -209,14 +208,32 @@ def handle_message(data):
             return
 
         last_message_times[ip] = current_time
+        msg_id = str(uuid.uuid4()) # Generate unique ID for reactions
 
         emit('receive_message', {
+            'msg_id': msg_id,
             'username': username,
             'message': message_content
         }, broadcast=True)
     
     elif len(message_content) > 500:
         emit('error_message', {'error': 'Message too long (Max 500 chars).'})
+
+@socketio.on('add_reaction')
+def handle_reaction(data):
+    username = active_sockets.get(request.sid)
+    msg_id = data.get('msg_id')
+    emoji = data.get('emoji')
+
+    if username and msg_id and emoji:
+        # Broadcast the reaction to everyone
+        # In a production app, you'd store this in Redis/DB, 
+        # but for an ephemeral chat, broadcasting is sufficient.
+        emit('update_reactions', {
+            'msg_id': msg_id,
+            'emoji': emoji,
+            'username': username
+        }, broadcast=True)
 
 @socketio.on('typing')
 def handle_typing(data):
