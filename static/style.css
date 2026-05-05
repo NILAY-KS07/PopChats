@@ -473,6 +473,92 @@ body {
     transform-origin: right bottom;
 }
 
+/* Mention Styles */
+.mention-tag {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.message-wrapper.mentioned .msg-box {
+    border: 1px solid #fbbf24;
+    background: rgba(251, 191, 36, 0.05);
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.1);
+}
+
+.mention-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #fbbf24;
+    color: #000;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transform: translateX(120%);
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mention-toast.show {
+    transform: translateX(0);
+}
+
+.mention-toast span {
+    font-size: 1.2rem;
+}
+
+/* Mention Suggestions */
+.mention-suggestions {
+    position: absolute;
+    bottom: 80px;
+    left: 20px;
+    width: 200px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.mention-suggestions.show {
+    display: flex;
+}
+
+.mention-item {
+    padding: 10px 15px;
+    color: var(--text-main);
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mention-item:hover, .mention-item.active {
+    background: var(--accent);
+}
+
+.mention-item::before {
+    content: '@';
+    color: var(--accent);
+}
+
+.mention-item:hover::before, .mention-item.active::before {
+    color: white;
+}
+
 .join-toast {
     position: fixed;
     top: 130px;

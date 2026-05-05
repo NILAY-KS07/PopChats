@@ -62,12 +62,17 @@
 
         <div id="typing-indicator" class="typing-indicator"></div>
 
+        <div id="mention-toast" class="mention-toast">
+            <span>🔔</span> <div id="mention-msg">You were mentioned!</div>
+        </div>
+
         <div id="error-toast" class="error-toast"></div>
         
     </main>
 
     <footer class="chat-input-area">
-        <div class="container">
+        <div class="container relative">
+            <div id="mention-suggestions" class="mention-suggestions"></div>
             <form class="input-wrapper">
                 <input type="text" id="user-msg" placeholder="Type message..." autocomplete="off">
                 <button type="submit" class="send-btn">

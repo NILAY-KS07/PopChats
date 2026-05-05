@@ -113,10 +113,31 @@ if (messageForm) {
 
     socket.on('receive_message', (data) => {
         const isMe = data.username === currentUser;
+        const message = data.message;
+        let isMentioned = false;
+
+        // Detect if the current user is mentioned (@Username)
+        // We do this BEFORE escaping for the check, but use the escaped version for display
+        if (currentUser && message.includes(`@${currentUser}`)) {
+            isMentioned = true;
+            if (!isMe) { // Don't notify if I mention myself
+                showMentionNotification(data.username);
+            }
+        }
+
+        // 1. Sanitize the message first to prevent XSS
+        const sanitizedMsg = escapeHTML(message);
+
+        // 2. Wrap any @mention in a styled span for everyone to see
+        const mentionRegex = /@(\w+)/g;
+        const highlightedMsg = sanitizedMsg.replace(mentionRegex, (match) => {
+            return `<span class="mention-tag">${match}</span>`;
+        });
+
         const msgHtml = `
-            <div class="message-wrapper ${isMe ? 'me' : ''}">
+            <div class="message-wrapper ${isMe ? 'me' : ''} ${isMentioned && !isMe ? 'mentioned' : ''}">
                 <span class="msg-username">${isMe ? 'You' : escapeHTML(data.username)}</span>
-                <div class="msg-box">${escapeHTML(data.message)}</div>
+                <div class="msg-box">${highlightedMsg}</div>
             </div>
         `;
         
@@ -128,14 +149,94 @@ if (messageForm) {
         });
     });
 
+    function showMentionNotification(from) {
+        const notif = document.getElementById('mention-toast');
+        const msg = document.getElementById('mention-msg');
+        if (notif && msg) {
+            msg.innerText = `${from} mentioned you!`;
+            notif.classList.add('show');
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 5000); // 5 seconds as requested
+        }
+    }
+
+    // --- Mention Suggestions Logic ---
+    const mentionSuggestions = document.getElementById('mention-suggestions');
+    let onlineUsers = [];
+
+    socket.on('update_users', (data) => {
+        // Filter out ourselves from the mention list
+        onlineUsers = data.users.filter(u => u !== currentUser);
+        const countEl = document.getElementById('count');
+        if (countEl) countEl.innerText = data.count;
+    });
+
+    if (messageInput) {
+        messageInput.addEventListener('input', (e) => {
+            const value = e.target.value;
+            const cursorPosition = e.target.selectionStart;
+            const textBeforeCursor = value.substring(0, cursorPosition);
+            const lastAtSymbol = textBeforeCursor.lastIndexOf('@');
+
+            if (lastAtSymbol !== -1) {
+                const charBeforeAt = textBeforeCursor[lastAtSymbol - 1];
+                if (lastAtSymbol === 0 || charBeforeAt === ' ' || charBeforeAt === '\n') {
+                    const query = textBeforeCursor.substring(lastAtSymbol + 1);
+                    if (!query.includes(' ')) {
+                        showSuggestions(query, lastAtSymbol);
+                        return;
+                    }
+                }
+            }
+            hideSuggestions();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (mentionSuggestions && !mentionSuggestions.contains(e.target) && e.target !== messageInput) {
+                hideSuggestions();
+            }
+        });
+    }
+
+    function showSuggestions(query, atIndex) {
+        if (!mentionSuggestions) return;
+        const filtered = onlineUsers.filter(u => u.toLowerCase().startsWith(query.toLowerCase()));
+        if (filtered.length > 0) {
+            mentionSuggestions.innerHTML = '';
+            filtered.forEach(user => {
+                const div = document.createElement('div');
+                div.className = 'mention-item';
+                div.innerText = user;
+                div.onclick = () => insertMention(user, atIndex);
+                mentionSuggestions.appendChild(div);
+            });
+            mentionSuggestions.classList.add('show');
+        } else {
+            hideSuggestions();
+        }
+    }
+
+    function hideSuggestions() {
+        if (mentionSuggestions) mentionSuggestions.classList.remove('show');
+    }
+
+    function insertMention(username, atIndex) {
+        const value = messageInput.value;
+        const textBeforeAt = value.substring(0, atIndex);
+        const textAfterCursor = value.substring(atIndex);
+        const spaceAfterAt = textAfterCursor.indexOf(' ');
+        const endOfQuery = spaceAfterAt === -1 ? value.length : atIndex + spaceAfterAt;
+        const textAfterMention = value.substring(endOfQuery);
+        messageInput.value = `${textBeforeAt}@${username} ${textAfterMention.startsWith(' ') ? textAfterMention : ' ' + textAfterMention}`;
+        hideSuggestions();
+        messageInput.focus();
+    }
+
     socket.on('user_joined', (data) => {
         if (data.username !== currentUser) {
             showJoinNotification(data.username);
         }
-    });
-
-    socket.on('update_count', (data) => {
-        document.getElementById('count').innerText = data.count;
     });
 
     function showJoinNotification(name) {

@@ -158,9 +158,12 @@ def handle_connect():
             return False
 
     active_sockets[request.sid] = username
-    unique_count = len(set(active_sockets.values()))
-    emit('update_count', {'count': unique_count}, broadcast=True)
-    emit('user_joined', {'username': username}, broadcast=True)
+    
+    # Broadcast the updated list of users to everyone
+    all_users = list(set(active_sockets.values()))
+    emit('update_users', {'users': all_users, 'count': len(all_users)}, broadcast=True)
+    
+    emit('user_joined', {'username': username}, broadcast=True, include_self=False)
     
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -177,8 +180,9 @@ def handle_disconnect():
             with get_db() as conn:
                 conn.execute("DELETE FROM users WHERE username = ?", (username,))
                 conn.commit()
-            unique_count = len(set(active_sockets.values()))
-            emit('update_count', {'count': unique_count}, broadcast=True)
+            
+            all_users = list(set(active_sockets.values()))
+            emit('update_users', {'users': all_users, 'count': len(all_users)}, broadcast=True)
 
 @socketio.on('send_message')
 def handle_message(data):
