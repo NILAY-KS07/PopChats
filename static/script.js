@@ -22,7 +22,7 @@ const SOCKET_URL = isLocal
 
 if (document.getElementById('chat-window')) {
     socket = io(SOCKET_URL, {
-        transports: ["websocket", "polling"],
+        transports: ["polling", "websocket"],
         reconnectionAttempts: 5,
         timeout: 10000,
         withCredentials: true
