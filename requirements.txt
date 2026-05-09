@@ -4,3 +4,6 @@ gevent
 gevent-websocket
 gunicorn
 flask-cors
+flask-session
+flask-limiter
+flask-wtf

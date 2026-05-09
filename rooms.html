@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooms | PopChats</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link rel="icon" type="image/png" href="static/favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="nav">
+    <div class="container nav-wrapper">
+        <a href="index.html" class="logo">Pop<span>Chats</span></a>
+    </div>
+</div>
+
+<div class="container" style="margin-top:100px;">
+
+    <div class="feature-box reveal-up" style="text-align:center;">
+        <h2>🌐 Public Chat</h2>
+        <p style="color:var(--text-dim); margin-bottom:20px;">
+            Join the global stream. Fast, chaotic, and alive.
+        </p>
+        <button class="primary-btn" onclick="window.location.href='login.html?room=public'">Enter Public Chat</button>
+    </div>
+    <br>
+    
+    <div class="features-section">
+    <h2 style="margin-bottom:20px;">🔥 Join a Room</h2>
+    <br><hr><br><br>
+
+        <div class="grid">
+
+            <a href="public-rooms.html" class="feature-box" style="border: 0.25px solid #2563eb;">
+                <h3>🧩 Custom Rooms</h3>
+                <p>Explore user-created rooms.</p>
+            </a>
+        
+
+            <a href="login.html?room=tech" class="feature-box">
+                <h3>💻 Tech</h3>
+                <p>Code, AI, dev talk.</p>
+            </a>
+
+            <a href="login.html?room=gaming" class="feature-box">
+                <h3>🎮 Gaming</h3>
+                <p>From casual to sweaty.</p>
+            </a>
+
+            <a href="login.html?room=sports" class="feature-box">
+                <h3>⚽ Sports</h3>
+                <p>Matches, debates, hype.</p>
+            </a>
+
+        </div>
+    </div>
+
+<button class="fab" onclick="openModal()">+</button>
+
+<div id="roomModal" class="modal">
+
+    <form class="modal-content" id="createRoomForm">
+
+        <h2>Create Room</h2>
+
+        <div class="input-group">
+            <label>Room Name</label>
+            <input id="roomName" placeholder="e.g. Midnight Talks" autocomplete = "off">
+        </div>
+
+        <div class="input-group">
+            <label>Description</label>
+            <input id="roomDesc" placeholder="What is this room about?" autocomplete = "off">
+        </div>
+
+        <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:15px;">
+            ⚠️ Rooms are public. No ownership. No moderation. Anyone can join (max 20 users).
+        </p>
+
+        <div id="roomFormError" class="form-error" style="display:none;"></div>
+
+        <button class="primary-btn" type="submit">Create</button>
+
+        <button 
+            class="primary-btn"
+            type="button"
+            style="background-color: var(--bg-dim);"
+            onclick="closeModal()"
+        >
+            Cancel
+        </button>
+
+    </form>
+</div>
+
+<script src = 'static/script.js'></script>
+<script>
+function openModal() {
+    document.getElementById("roomModal").classList.add("show");
+}
+
+function closeModal() {
+    document.getElementById("roomModal").classList.remove("show");
+}
+</script>
+<footer class="footer">
+    <div class="container footer-content">
+
+        <img src="static/favicon.png"
+             alt="PopChats Logo"
+             style="border-radius:16px; margin-bottom:10px;"
+             height="40" width="40">
+
+        <div class="footer-main">
+            PopChats v1.2
+        </div>
+
+        <div class="footer-credit">
+            © 2026 PopChats. All rights reserved.
+        </div>
+
+        <div class="footer-credit" style="margin-top:10px;">
+            Built with ❤️ by:  
+            <a href="https://github.com/NILAY-KS07" target="_blank">
+                Nilay Kumar Shrivastava
+            </a>
+        </div>
+
+        <div class="footer-credit" style="margin-top:10px;">
+            <a href="privacy.html">Privacy</a>
+            •
+            <a href="terms.html">Terms</a>
+        </div>
+
+    </div>
+</footer>
+</body>
+</html>

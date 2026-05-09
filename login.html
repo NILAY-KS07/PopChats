@@ -11,7 +11,7 @@
 <body class="center-mode">
     <nav class="nav">
         <div class="container">
-            <a href="index.html" class="logo">Pop<span>Chats</span></a>
+            <a href="rooms.html" class="logo">Pop<span>Chats</span></a>
         </div>
     </nav>
 
@@ -19,7 +19,7 @@
     <div class="auth-card">
         <div class="auth-header">
             <h2>Welcome</h2>
-            <p>Just Enter any Username you like and join the conversation!</p><br>
+            <p>Just Enter any Username you like and join the conversation!<br>You will be joining <b id='room'></b> now!</p><br>
         </div>
 
         <form id="login-form" class="auth-form">
@@ -30,6 +30,11 @@
                 <div id="error-message" class="error-popup" style="color: #ff4444; margin-bottom: 10px; font-size:10px; display:none;"></div>
                 
                 <button type="submit" class="primary-btn">Join Chat!</button>
+
+                <div class="rules-box">
+                    <a href="rules.html">Read Chat Rules Before Entering</a>
+                </div>
+
             </div>
         </form>
 
@@ -39,8 +44,50 @@
         </div>
     </div>
 </div>
+
+<footer class="footer">
+    <div class="container footer-content">
+
+        <img src="static/favicon.png"
+             alt="PopChats Logo"
+             style="border-radius:16px; margin-bottom:10px;"
+             height="40" width="40">
+
+        <div class="footer-main">
+            PopChats v1.2
+        </div>
+
+        <div class="footer-credit">
+            © 2026 PopChats. All rights reserved.
+        </div>
+
+        <div class="footer-credit" style="margin-top:10px;">
+            Built with ❤️ by:  
+            <a href="https://github.com/NILAY-KS07" target="_blank">
+                Nilay Kumar Shrivastava
+            </a>
+        </div>
+
+        <div class="footer-credit" style="margin-top:10px;">
+            <a href="privacy.html">Privacy</a>
+            •
+            <a href="terms.html">Terms</a>
+        </div>
+
+    </div>
+</footer>
     
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="static/script.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const currentRoom = localStorage.getItem("room") || "public";
+    const roomEl = document.getElementById("room");
+
+    if (roomEl) {
+        roomEl.innerText = currentRoom.charAt(0).toUpperCase() + currentRoom.slice(1) + " Room";
+    }
+});
+</script>
 </body>
 </html>

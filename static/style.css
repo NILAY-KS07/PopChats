@@ -26,6 +26,10 @@
     background: var(--accent);
 }
 
+::selection {
+    background:none;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -45,6 +49,17 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     padding-top: 80px;
+    cursor: default;
+}
+
+.rooms-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.rooms-page > .rooms-content {
+    flex: 1;
 }
 
 .loader-container {
@@ -97,6 +112,21 @@ body {
     padding: 0 24px;
 }
 
+.rules-box {
+    margin-top: 18px;
+    text-align: center;
+}
+
+.rules-box a {
+    color: var(--accent);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.rules-box a:hover {
+    text-decoration: underline;
+}
+
 .nav {
     height: 80px;
     display: flex;
@@ -127,6 +157,18 @@ body {
 
 .logo span {
     color: var(--accent);
+}
+
+.logo-group {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.room-name {
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: 0.8;
 }
 
 .nav-links {
@@ -180,9 +222,27 @@ body {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 30px;
     padding-bottom: 100px;
+    justify-items: stretch;
+}
+
+.room-grid {
+    grid-template-columns: repeat(auto-fit, minmax(360px, 420px));
+    justify-content: center;
+    }
+
+.room-description {
+    margin: 12px 0;
+    color: var(--text-dim);
+    line-height: 1.5;
+}
+
+.room-count {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
 }
 
 .feature-box {
@@ -191,6 +251,9 @@ body {
     border-radius: 16px;
     border: 1px solid var(--border);
     transition: var(--transition);
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 .feature-box:hover {
@@ -212,6 +275,87 @@ body {
 .feature-box p {
     color: var(--text-dim);
     font-size: 0.95rem;
+}
+
+.fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: white;
+    font-size: 2rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    transition: var(--transition);
+    z-index: 9999;
+}
+
+.fab:hover {
+    background: var(--accent-hover);
+    transform: scale(1.1);
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid var(--border);
+    transform: scale(0.5);
+    opacity: 0;
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    60% {
+        transform: scale(1.1); 
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal.show .modal-content {
+    animation: popIn 0.35s ease forwards;
+}
+
+.empty-state {
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--text-dim);
+    opacity: 0.6;
+    text-align: center;
 }
 
 .primary-btn {
@@ -251,6 +395,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 40px 20px;
+    margin-top: -20%;
 }
 
 .auth-card {
@@ -260,6 +405,12 @@ body {
     padding: 40px;
     border-radius: 20px;
     border: 1px solid var(--border);
+}
+
+body.center-mode {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .input-group {
@@ -314,11 +465,48 @@ input:focus {
 .reveal-up { animation: slideUp 0.8s ease forwards; }
 
 .footer {
-    text-align: center;
-    padding: 40px;
+    margin-top: 60px;
+    padding: 30px 0;
     border-top: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.02);
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+
+.footer-content {
+    text-align: center;
+}
+
+.footer-main {
+    font-size: 0.9rem;
     color: var(--text-dim);
-    font-size: 0.85rem;
+    margin-bottom: 8px;
+}
+
+.footer-credit {
+    font-size: 0.95rem;
+    color: var(--text-light);
+}
+
+.footer-credit a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.footer-credit a:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
+.footer img {
+    border: 2px solid var(--accent);
+    padding:4px;
 }
 
 .chat-mode {
@@ -533,6 +721,15 @@ input:focus {
     transform: translateX(-50%) translateY(0);
 }
 
+/* Inline form error (room creation) */
+.form-error {
+    margin-bottom: 12px;
+    color: #ef4444;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+
 html, body {
     width: 100%;
     margin: 0;
@@ -553,8 +750,10 @@ html, body {
 @media screen and (max-width: 768px) {
     
     .container {
-        padding: 0 16px; 
+        padding: 0 16px;
+        max-width: 100%;
     }
+
 
     .main-title {
         font-size: 2.2rem;
@@ -569,11 +768,16 @@ html, body {
     }
 
     .grid {
-        grid-template-columns: 1fr; 
+        grid-template-columns: 1fr;
         gap: 15px;
         padding: 20px;
-        min-width: 0; 
+        min-width: 0;
     }
+
+    .room-grid {
+        grid-template-columns: 1fr;
+    }
+
 
     .feature-box {
         padding: 25px;
@@ -606,6 +810,7 @@ html, body {
         margin-top: 80px;
     }
 
+
     .message-wrapper {
         max-width: 90%;
     }
@@ -624,7 +829,12 @@ html, body {
         font-size: 0.8rem;
     }
 
+    .auth-container {
+        margin-top:1%;
+    }
+
     .auth-card {
+        margin-top: 25%;
         margin: 0 15px;
         padding: 30px 20px;
     }
@@ -660,7 +870,7 @@ html, body {
     }
     .alert-bar {
         padding: 5px;
-        font-size: 0.5rem;
+        font-size: 0.75rem;
     }
 }
 
@@ -693,13 +903,17 @@ html, body {
     }
 
     .pulse-ring {
-    width: 30px; /* Compact for mobile */
+    width: 30px; 
     height: 30px;
-    border-width: 2px; /* Thinner border for a cleaner look */
+    border-width: 2px; 
     }
 
     .loading-text {
     font-size: 0.75rem;
-    max-width: 180px; /* Keeps text on two lines if needed */
+    max-width: 180px; 
     }
 }
+
+    .auth-card {
+        margin-top:25%;
+    }
