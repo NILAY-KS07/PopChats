@@ -76,7 +76,7 @@
         </div>
 
         <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:15px;">
-            ⚠️ Rooms are public. No ownership. No moderation. Anyone can join (max 20 users).
+            ⚠️ Rooms are public. No ownership. No moderation. Anyone can join (max 20 users). Empty rooms are auto-deleted.
         </p>
 
         <div id="roomFormError" class="form-error" style="display:none;"></div>
@@ -99,10 +99,13 @@
 <script>
 function openModal() {
     document.getElementById("roomModal").classList.add("show");
+    document.getElementsByClassName('fab').item(0).style.display = 'none';
 }
 
 function closeModal() {
     document.getElementById("roomModal").classList.remove("show");
+    document.getElementById("createRoomForm").reset();
+    document.getElementsByClassName('fab').item(0).style.display = 'block';
 }
 </script>
 <footer class="footer">

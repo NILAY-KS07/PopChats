@@ -3,7 +3,7 @@ from app import limiter
 
 from app.models.db import get_db
 from app.utils.filter import is_clean
-from app.sockets.events import DEFAULT_ROOMS, rooms
+from app.sockets.events import DEFAULT_ROOMS
 
 authPub_bp = Blueprint('authPub', __name__)
 
@@ -35,16 +35,31 @@ def check_roomname():
     if roomname in DEFAULT_ROOMS:
         return jsonify({"error": "Room name is taken/Reserved."}), 400
 
-    # Check DB for existing room name
+   # Check DB for existing room name
     with get_db() as conn:
+
         cursor = conn.cursor()
-        cursor.execute("SELECT 1 FROM rooms WHERE name = ?", (roomname,))
+
+        cursor.execute(
+            "SELECT 1 FROM rooms WHERE name = ?",
+            (roomname,)
+        )
+
         if cursor.fetchone():
-            return jsonify({"error": "Room name is taken."}), 400
+            return jsonify({
+                "error": "Room name is taken."
+            }), 400
 
-    rooms[roomname] = {
-    "users": set(),
-    "description": roomdesc
-    }
+        cursor.execute(
+            """
+            INSERT INTO rooms (name, description)
+            VALUES (?, ?)
+            """,
+            (roomname, roomdesc)
+        )
 
-    return jsonify({"success": True}), 200
+        conn.commit()
+
+    return jsonify({
+        "success": True
+    }), 200

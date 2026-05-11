@@ -44,9 +44,9 @@ def create_app():
     flask_app.config['DEBUG'] = False
 
     flask_app.config.update(
-        SESSION_COOKIE_HTTPONLY=True,
-        SESSION_COOKIE_SECURE=IS_PRODUCTION,
-        SESSION_COOKIE_SAMESITE="None" if IS_PRODUCTION else "Lax"
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Lax',
+    SESSION_COOKIE_SECURE=IS_PRODUCTION
     )
 
     limiter.init_app(flask_app)
@@ -55,7 +55,15 @@ def create_app():
     os.makedirs(flask_app.instance_path, exist_ok=True)
 
     cors.init_app(flask_app, resources={r"/api/*": {"origins": origins}}, supports_credentials=True)
-    socketio.init_app(flask_app, cors_allowed_origins=origins)
+    socketio.init_app(
+    flask_app,
+    cors_allowed_origins=origins,
+    ping_timeout=30,
+    ping_interval=20,
+    max_http_buffer_size=2_000_000,
+    manage_session=False
+    )
+
 
     flask_app.register_blueprint(auth_bp)
     flask_app.register_blueprint(health_bp)

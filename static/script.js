@@ -1,317 +1,252 @@
-const isLocal =
-  window.location.hostname === "127.0.0.1" ||
-  window.location.hostname === "localhost";
+const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+const API_BASE = isLocal ? "http://127.0.0.1:5000" : "";
+const SOCKET_URL = isLocal ? "http://127.0.0.1:5000" : undefined;
 
-const API_BASE = isLocal
-  ? "http://127.0.0.1:5000"
-  : "";
-
-const API = (path, options = {}) =>
-  fetch(`${API_BASE}/api${path}`, {
-    credentials: "include",
-    ...options
-  });
-
-API("/ping").catch(() => {});
-
-let socket = null;
-
-const SOCKET_URL = isLocal
-  ? "http://127.0.0.1:5000"
-  : undefined;
-
-if (document.getElementById('chat-window')) {
-    socket = io(SOCKET_URL, {
-        transports: ["polling", "websocket"],
-        reconnectionAttempts: 5,
-        timeout: 10000,
-        withCredentials: true
-    });
-}
+// --- 1. STATE & PERSISTENCE ---
 const params = new URLSearchParams(window.location.search);
-let room = params.get("room");
+const roomFromURL = params.get("room");
 
-if (room) {
-    localStorage.setItem("room", room);
-    window.__popchats_currentRoom = room;
+if (roomFromURL) {
+    localStorage.setItem("current_room", roomFromURL);
 }
 
-const currentRoom =
-    window.__popchats_currentRoom ||
-    localStorage.getItem("room") ||
-    "public";
+const currentRoom = roomFromURL || localStorage.getItem('current_room') || 'public';
+localStorage.setItem('current_room', currentRoom);
+const currentUser = localStorage.getItem("username");
 
+const API = (path, options = {}) => {
+
+    const headers = {
+        ...(options.headers || {})
+    };
+
+    // Only attach JSON header if body exists
+    if (options.body) {
+        headers['Content-Type'] = 'application/json';
+    }
+
+    return fetch(`${API_BASE}/api${path}`, {
+        credentials: 'include',
+        ...options,
+        headers
+    });
+};
+
+// --- 2. UI HELPERS ---
 const updateStatus = (statusClass, text) => {
     const status = document.querySelector('.server-status');
     if (status) {
         status.className = `server-status ${statusClass}`;
-        status.innerHTML = '<span></span>';
-        status.append(` ${text}`);
+        status.innerHTML = `<span></span> ${text}`;
     }
 };
 
-if (socket) {
+const showNotification = (name) => {
+    const notif = document.getElementById('join-notif');
+    const nameSpan = document.getElementById('joined-username');
+    if (notif && nameSpan) {
+        nameSpan.innerText = name;
+        notif.classList.add('show');
+        setTimeout(() => notif.classList.remove('show'), 3000);
+    }
+};
+
+const scrollToBottom = () => {
+    const chatContainer = document.querySelector('.chat-container');
+    if (chatContainer) {
+        chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
+    }
+};
+
+// --- 3. CHAT LOGIC ---
+let socket = null;
+const chatWindow = document.getElementById('chat-window');
+
+if (chatWindow) {
+    // Security check
+    async function verifySession() {
+        try {
+            const res = await API('/me');
+
+            if (!res.ok) {
+                localStorage.removeItem('username');
+                window.location.href = `login.html?room=${encodeURIComponent(currentRoom)}`;
+                return false;
+            }
+
+            return true;
+        } catch {
+            updateStatus('connecting', 'Server Offline');
+            return false;
+        }
+    }
+
+(async () => {
+    const valid = await verifySession();
+
+    if (!valid) return;
+
+    socket = io(SOCKET_URL, {
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionAttempts: Infinity,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 20000,
+        withCredentials: true,
+        auth: {
+            username: currentUser
+        }
+    });
+
+    initializeSocketEvents();
+})();
+
+function initializeSocketEvents() {
     socket.on('connect', () => {
         updateStatus('active', 'Active');
+        socket.emit('join_room', {
+            room: currentRoom
+        });
     });
+
+    socket.on('receive_message', (data) => {
+        const isMe = data.username === currentUser;
+        const wrapper = document.createElement('div');
+        wrapper.className = `message-wrapper ${isMe ? 'me' : ''}`;
+        
+        wrapper.innerHTML = `
+            <span class="msg-username">${isMe ? 'You' : data.username}</span>
+            <div class="msg-box">${data.message}</div>
+        `;
+
+        chatWindow.appendChild(wrapper);
+        scrollToBottom();
+    });
+
+    socket.on('user_joined', (data) => {
+        if (data.username !== currentUser) {
+            showNotification(data.username);
+        }
+    });
+
+    socket.on('update_count', (data) => {
+        const countEl = document.getElementById('count');
+        if (countEl) countEl.innerText = data.count;
+    });
+
+    socket.on('error_message', (data) => {
+        const errorToast = document.getElementById('error-toast');
+        if (errorToast) {
+            errorToast.innerText = data.error;
+            errorToast.classList.add('show');
+            setTimeout(() => errorToast.classList.remove('show'), 5000);
+        }
+    });
+
+    socket.on('disconnect', () => updateStatus('connecting', 'Reconnecting...'));
+    socket.on('connect_error', () => updateStatus('connecting', 'Connection Failed'));
 }
 
-const loginForm = document.getElementById('login-form');
-const loader = document.getElementById('loader');
-const errorDiv = document.getElementById('error-message');
+    // --- MESSAGE SENDING & COOLDOWN ---
+    const messageForm = document.querySelector('.input-wrapper');
+    const messageInput = document.getElementById('user-msg');
+    let isCooldown = false;
 
+    if (messageForm) {
+        messageForm.onsubmit = (e) => {
+            e.preventDefault();
+            const msg = messageInput.value.trim();
+            const sendBtn = document.querySelector('.send-btn');
+
+            if (isCooldown || !msg || !socket.connected) return;
+
+            // Send room name with message so backend knows where it goes
+            socket.emit('send_message', { 
+                message: msg,  
+            });
+
+            messageInput.value = '';
+            
+            // Cooldown Logic
+            isCooldown = true;
+            if (sendBtn) sendBtn.style.opacity = "0.5";
+            setTimeout(() => {
+                isCooldown = false;
+                if (sendBtn) sendBtn.style.opacity = "1";
+            }, 1000);
+        };
+    }
+}
+
+// --- 4. LOGIN LOGIC ---
+const loginForm = document.getElementById('login-form');
 if (loginForm) {
     loginForm.onsubmit = async (e) => {
         e.preventDefault();
-        
-        loginForm.style.display = 'none';
-        loader.style.display = 'flex';
-        errorDiv.style.display = 'none';
+        const usernameInput = document.getElementById('username-input').value.trim();
+        const loader = document.getElementById('loader');
+        const errorDiv = document.getElementById('error-message');
 
-        const username = document.getElementById('username-input').value.trim();
+        if (loader) loader.style.display = 'flex';
+        loginForm.style.display = 'none';
 
         try {
             const response = await API("/login-user", {
                 method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json', 
-                },
-                body: JSON.stringify({ username: username })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: usernameInput })
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                window.location.href = `chat.html?room=${currentRoom || "public"}`;
+                localStorage.setItem("username", usernameInput);
+                window.location.href = `chat.html?room=${currentRoom}`;
             } else {
+                if (loader) loader.style.display = 'none';
                 loginForm.style.display = 'block';
-                loader.style.display = 'none';
-                errorDiv.innerText = data.error;
-                errorDiv.style.display = 'block';
+                if (errorDiv) {
+                    errorDiv.innerText = data.error;
+                    errorDiv.style.display = 'block';
+                }
             }
         } catch (err) {
+            if (loader) loader.style.display = 'none';
             loginForm.style.display = 'block';
-            loader.style.display = 'none';
-            errorDiv.innerText = "Something went wrong! Try Again?";
-            errorDiv.style.display = 'block';
+            alert("Server connection failed.");
         }
     };
 }
 
-const chatWindow = document.getElementById('chat-window');
-const messageForm = document.querySelector('.input-wrapper');
-const messageInput = document.getElementById('user-msg');
-let currentUser = '';
-
-API("/me")
-.then(res => {
-
-    if (!res.ok) {
-
-        if (window.location.pathname.includes("chat.html")) {
-            window.location.href = "login.html";
-        }
-
-        return null;
-    }
-
-    return res.json();
-})
-.then(data => {
-
-    if (!data) return;
-
-    currentUser = data.username;
-
-    if (!socket) return;
-
-    const joinRoom = () => {
-        socket.emit("join_room", { room: currentRoom });
-    };
-
-    if (socket.connected) {
-        joinRoom();
-    }
-
-    socket.off("connect", joinRoom);
-    socket.on("connect", joinRoom);
-
-});
-
-let isCooldown = false;
-
-if (messageForm && socket) {
-    let hasJoined = false;
-
-    messageForm.onsubmit = (e) => {
-        e.preventDefault();
-        const msg = messageInput.value.trim();
-        const sendBtn = document.querySelector('.send-btn');
-
-        if (isCooldown) return;
-        if (!hasJoined) {
-            const errorNotif = document.getElementById('error-toast');
-            if (errorNotif) {
-                errorNotif.innerText = 'Joining room...';
-                errorNotif.classList.add('show');
-                setTimeout(() => errorNotif.classList.remove('show'), 2000);
-            }
-            return;
-        }
-
-        if (msg) {
-            socket.emit('send_message', { 
-                message: msg,
-                room: currentRoom
-            });
-            messageInput.value = '';
-
-            isCooldown = true;
-            sendBtn.disabled = true;
-            sendBtn.style.opacity = "0.5";
-            sendBtn.style.cursor = "not-allowed";
-
-            setTimeout(() => {
-                isCooldown = false;
-                sendBtn.disabled = false;
-                sendBtn.style.opacity = "1";
-                sendBtn.style.cursor = "pointer";
-            }, 2000);
-        }
-    };
-
-socket.on('receive_message', (data) => {
-
-    const isMe = data.username === currentUser;
-
-    const wrapper = document.createElement('div');
-    wrapper.className = `message-wrapper ${isMe ? 'me' : ''}`;
-
-    const usernameSpan = document.createElement('span');
-    usernameSpan.className = 'msg-username';
-    usernameSpan.textContent = isMe ? 'You' : data.username;
-
-    const msgBox = document.createElement('div');
-    msgBox.className = 'msg-box';
-    msgBox.textContent = data.message;
-
-    wrapper.appendChild(usernameSpan);
-    wrapper.appendChild(msgBox);
-
-    chatWindow.appendChild(wrapper);
-
-    const chatContainer = document.querySelector('.chat-container');
-
-    chatContainer.scrollTo({
-        top: chatContainer.scrollHeight,
-        behavior: 'smooth'
-    });
-});
-
-    socket.on('user_joined', (data) => {
-        if (data.username !== currentUser) {
-            showJoinNotification(data.username);
-        }
-    });
-
-    socket.on('update_count', (data) => {
-        document.getElementById('count').innerText = data.count;
-        hasJoined = true;
-    });
-
-    function showJoinNotification(name) {
-        const notif = document.getElementById('join-notif');
-        const nameSpan = document.getElementById('joined-username');
-        
-        if (notif && nameSpan) {
-            nameSpan.innerText = name;
-            notif.classList.add('show');
-            setTimeout(() => {
-                notif.classList.remove('show');
-            }, 1500);
-        }
-    }
-
-    socket.on('disconnect', () => updateStatus('connecting', 'Reconnecting...'));
-    socket.on('connect_error', () => updateStatus('connecting', 'Connection Error'));
-
-    socket.on('error_message', (data) => {
-        const errorNotif = document.getElementById('error-toast');
-        if (errorNotif) {
-            errorNotif.innerText = data.error;
-            errorNotif.classList.add('show');
-            setTimeout(() => errorNotif.classList.remove('show'), 3000);
-        }
-    });
-};
-
-
+// --- 6. ROOM CREATION PAGE LOGIC ---
 const roomForm = document.getElementById('createRoomForm');
-
 if (roomForm) {
-
     roomForm.onsubmit = async (e) => {
-
         e.preventDefault();
-
         const rName = document.getElementById('roomName').value.trim();
         const rDesc = document.getElementById('roomDesc').value.trim();
         const errorEl = document.getElementById('roomFormError');
 
-        const showError = (msg) => {
-            if (!errorEl) return;
-            errorEl.innerText = msg;
-            errorEl.style.display = 'block';
-        };
-
-        // Reset error on each submit
-        if (errorEl) {
-            errorEl.innerText = '';
-            errorEl.style.display = 'none';
-        }
-
-        // Basic client-side validation (server will re-validate too)
-        if (!rName) {
-            showError('Room name is required.');
-            return;
-        }
-        if (rName.length < 3 || rName.length > 50) {
-            showError('Room name length is invalid.');
-            return;
-        }
-        if (!rDesc) {
-            showError('Room description is required.');
-            return;
-        }
-        if (rDesc.length > 200) {
-            showError('Room description is too long.');
-            return;
-        }
-
         try {
             const response = await API("/check-roomname", {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: rName,
-                    description: rDesc
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: rName, description: rDesc })
             });
-
-            const data = await response.json().catch(() => ({}));
+            const data = await response.json();
 
             if (response.ok) {
+                localStorage.setItem("current_room", rName);
                 window.location.href = `login.html?room=${encodeURIComponent(rName)}`;
             } else {
-                showError(data.error || 'Failed to create room.');
+                if (errorEl) {
+                    errorEl.innerText = data.error;
+                    errorEl.style.display = 'block';
+                }
             }
-
         } catch (err) {
-            console.error("Room creation error:", err);
-            showError('Server/network error.');
+            alert("Error creating room.");
         }
     };
 }
-

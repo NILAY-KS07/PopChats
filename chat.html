@@ -8,15 +8,6 @@
     <link rel="icon" type="image/png" href="static/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
-<script>
-    setTimeout(() => {
-        const username = localStorage.getItem('username');
-
-        if (!username || username === "null" || username === "undefined") {
-            window.location.href = 'login.html';
-        }
-    }, 500);
-</script>
 <body class="chat-mode">
 
     <div id="join-notif" class="join-toast">
@@ -56,13 +47,6 @@
                 alertBar.style.pointerEvents = 'none';
             });
 
-            const roomNameEl = document.getElementById("room-name");
-            const currentRoomName = localStorage.getItem("room") || "public";
-
-            if (roomNameEl) {
-                roomNameEl.innerText = `#${currentRoomName}`;
-            }
-
         </script>
     </div>
 
@@ -88,5 +72,12 @@
     </footer>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="static/script.js"></script>
+<script>
+    const roomNameEl = document.getElementById("room-name");
+
+    if (roomNameEl) {
+        roomNameEl.innerText = `#${currentRoom}`;
+    }
+</script>
 </body>
 </html>

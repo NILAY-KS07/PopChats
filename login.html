@@ -81,7 +81,7 @@
 <script src="static/script.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const currentRoom = localStorage.getItem("room") || "public";
+    const currentRoom = localStorage.getItem("current_room") || "public";
     const roomEl = document.getElementById("room");
 
     if (roomEl) {

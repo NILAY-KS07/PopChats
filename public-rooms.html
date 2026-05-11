@@ -34,25 +34,15 @@
 
 </div>
 
-<!-- SCRIPT -->
+<script src="static/script.js"></script>
+
 <script>
-const hostname = window.location.hostname;
-
-const isLocal =
-  hostname === "localhost" ||
-  hostname === "127.0.0.1" ||
-  hostname.startsWith("192.168.");
-
-const API_BASE_URL = isLocal
-  ? `${window.location.protocol}//${hostname}:5000`
-  : "https://popchats.onrender.com";
-
 async function loadRooms() {
     const list = document.getElementById("roomList");
     const empty = document.getElementById("emptyState");
 
     try {
-        const res = await fetch(`${API_BASE_URL}/rooms`);
+        const res = await API("/rooms");
         const data = await res.json();
 
         list.innerHTML = "";
@@ -75,13 +65,15 @@ async function loadRooms() {
             `;
 
             div.onclick = () => {
-                window.location.href = `login.html?room=${room.name}`;
+                window.location.href =
+                    `login.html?room=${encodeURIComponent(room.name)}`;
             };
 
             list.appendChild(div);
         });
 
-    } catch {
+    } catch (err) {
+        console.error(err);
         empty.innerText = "Failed to load rooms";
     }
 }

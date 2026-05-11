@@ -5,132 +5,177 @@ import time
 from app.extensions import socketio
 from app.utils.filter import is_clean
 from app.models.db import get_db
+from collections import defaultdict
 
 
 
 # ===== STORAGE =====
-user_rooms = {}     # sid -> room
-rooms = {}          # room -> set(username)
-active_sockets = {} # sid -> username
+sid_to_user = {}
+sid_to_room = {}
+user_to_sids = defaultdict(set)
+room_to_users = defaultdict(set)
+
 last_message_times = {}
 
 DEFAULT_ROOMS = {"public", "tech", "gaming", "sports"} # more to be added soon
 
 # ===== CONNECT =====
 @socketio.on('connect')
-def handle_connect(auth=None):
-    """Socket.IO connect handler.
+def handle_connect(auth):
+    auth = auth or {}
 
-    Our client sends username via `auth: { username }`.
-    Depending on Flask-SocketIO/engine versions, Flask may expose different fields.
-    """
-    username = session.get('username')
+    username = (auth.get('username') or '').strip()
 
-    if not username:
+    session_username = session.get('username')
+
+    if not username or username != session_username:
         return False
 
-    active_sockets[request.sid] = username
+    sid = request.sid
 
+    sid_to_user[sid] = username
+    user_to_sids[username].add(sid)
 
-# ===== JOIN ROOM =====
 @socketio.on('join_room')
 def handle_join_room(data):
-    username = active_sockets.get(request.sid)
-    room = (data or {}).get('room', 'public')
+    sid = request.sid
+
+    room = (data.get('room') or '').strip()
+
+    username = sid_to_user.get(sid)
 
     if not username:
-        emit('error_message', {'error': 'Not authenticated (username missing)'} )
+        emit('error_message', {
+            'error': 'Authentication required'
+        })
         return
 
-
-    if room not in rooms:
-        rooms[room] = {
-            "users": set(),
-            "description": "No description"
-        }
-
-
-    # limit only custom rooms (default rooms are unlimited)
-    if room not in DEFAULT_ROOMS and len(rooms[room]["users"]) >= 20:
-        emit('error_message', {'error': 'Room full (20 max)'} )
+    if not room:
+        emit('error_message', {
+            'error': 'Invalid room'
+        })
         return
 
+    old_room = sid_to_room.get(sid)
+
+    # leave previous room tracking
+    if old_room and old_room != room:
+        room_to_users[old_room].discard(username)
+
+        emit('update_count', {
+            'count': len(room_to_users[old_room])
+        }, to=old_room)
 
     join_room(room)
 
-    rooms[room]["users"].add(username)
-    user_rooms[request.sid] = room
+    sid_to_room[sid] = room
+    room_to_users[room].add(username)
 
-    emit('update_count', {'count': len(rooms[room]["users"])}, to=room)
-    emit('user_joined', {'username': username}, to=room)
+    emit('user_joined', {
+        'username': username
+    }, to=room)
 
+    emit(
+        "update_count",
+        {"count": len(room_to_users.get(room, set()))},
+        to=room
+    )
 
-# ===== SEND MESSAGE =====
+MAX_MESSAGE_LENGTH = 1000
+MESSAGE_COOLDOWN = 2
+
 @socketio.on('send_message')
-def handle_message(data):
-    username = active_sockets.get(request.sid)
-    server_room = user_rooms.get(request.sid)
+def handle_send_message(data):
+    sid = request.sid
 
-    if not username or not server_room:
-        emit('error_message', {'error': 'Not joined to a room yet'} )
+    username = sid_to_user.get(sid)
+    room = sid_to_room.get(sid)
+
+    if not username or not room:
+        emit('error_message', {
+            'error': 'Authentication expired'
+        })
         return
 
-    data = data or {}
-    client_room = data.get('room')
-    message = str(data.get('message', '')).strip()
-
-    # Hard validation: prevent sending to the wrong room during reconnect races.
-    if client_room and client_room != server_room:
-        emit('error_message', {'error': 'Room mismatch. Please rejoin.'})
-        return
+    message = (data.get('message') or '').strip()
 
     if not message:
         return
 
+    if len(message) > MAX_MESSAGE_LENGTH:
+        emit('error_message', {
+            'error': 'Message too long'
+        })
+        return
+
     if not is_clean(message):
-        emit('error_message', {'error': 'Kindly avoid using such words.'})
+        emit('error_message', {
+            'error': 'Message blocked'
+        })
         return
 
-    # cooldown
     now = time.time()
-    if now - last_message_times.get(username, 0) < 2:
-        emit('error_message', {'error': 'Slow down'})
+
+    last = last_message_times.get(sid, 0)
+
+    if now - last < MESSAGE_COOLDOWN:
+        emit('error_message', {
+            'error': 'Slow down'
+        })
         return
 
-    last_message_times[username] = now
+    last_message_times[sid] = now
 
     emit('receive_message', {
         'username': username,
         'message': message
-    }, to=server_room)
+    }, to=room)
 
-
-# ===== DISCONNECT =====
 @socketio.on('disconnect')
 def handle_disconnect():
-    username = active_sockets.pop(request.sid, None)
-    room = user_rooms.pop(request.sid, None)
-
-    # Always attempt to unlock username in DB on disconnect.
-    # DB `users` table is used purely for temporary presence/auth.
-    if username:
-        try:
-            with get_db() as conn:
-                conn.execute("DELETE FROM users WHERE username = ?", (username,))
-                conn.commit()
-        except Exception:
-            # Avoid crashing socket disconnect flow.
-            pass
-
-    if not username or not room:
+    sid = request.sid
+    username = sid_to_user.pop(sid, None)
+    room = sid_to_room.pop(sid, None)
+    last_message_times.pop(sid, None)
+    if not username:
         return
 
-    if room in rooms and username in rooms[room]["users"]:
-        rooms[room]["users"].remove(username)
+    user_sids = user_to_sids.get(username)
+    if user_sids:
+        user_sids.discard(sid)
+        if not user_sids:
+            user_to_sids.pop(username, None)
+            try:
+                with get_db() as conn:
+                    conn.execute(
+                        'DELETE FROM users WHERE username = ?',
+                        (username,)
+                    )
+                    conn.commit()
+            except Exception as e:
+                print('DB cleanup error:', e)
 
-        emit('update_count', {'count': len(rooms[room]["users"])}, to=room)
-
-        # delete empty custom rooms
-        if room not in DEFAULT_ROOMS and len(rooms[room]["users"]) == 0:
-            del rooms[room]
+    if room:
+        users = room_to_users.get(room)
+        if users:
+            users.discard(username)
+            count = len(users)
+            if count <= 0:
+                room_to_users.pop(room, None)
+                if room not in DEFAULT_ROOMS:
+                    try:
+                        with get_db() as conn:
+                            conn.execute(
+                                'DELETE FROM rooms WHERE name = ?',
+                                (room,)
+                            )
+                            conn.commit()
+                    except Exception as e:
+                        print("Room cleanup error:", e)
+            else:
+                emit(
+                    "update_count",
+                    {"count": count},
+                    to=room
+                )
 

@@ -22,30 +22,37 @@ def login_user():
     if not is_clean(username):
         return jsonify({"error": "Invalid username."}), 400
 
-    with get_db() as conn:
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT 1 FROM users WHERE username = ?", (username,))
-        if cursor.fetchone():
-            return jsonify({"error": "Username is active."}), 400
+    #First through in, If a user is already logged in but changing rooms, directly let it in.
+    if session.get('username') == username:
+        return jsonify({"success": True}), 200
 
         try:
-            cursor.execute("INSERT INTO users (username) VALUES (?)", (username,))
-            conn.commit()
-        except sqlite3.IntegrityError:
-            return jsonify({"error": "Username taken."}), 400
+            with get_db() as conn:
+                conn.execute(
+                    'INSERT INTO users (username) VALUES (?)',
+                    (username,)
+                )
+                conn.commit()
 
+        except sqlite3.IntegrityError:
+            return jsonify({
+                'error': 'Username already active'
+            }), 409
+
+    #Second through in, If a user is new 
     session['username'] = username
     return jsonify({"success": True}), 200
 
 @auth_bp.route('/api/me')
-def get_me():
-
+def me():
     username = session.get('username')
 
     if not username:
-        return jsonify({"error": "Unauthorized"}), 401
+        return jsonify({
+            'authenticated': False
+        }), 401
 
     return jsonify({
-        "username": username
+        'authenticated': True,
+        'username': username
     })
