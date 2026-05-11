@@ -5,3 +5,4 @@ gevent-websocket
 gunicorn
 flask-cors
 flask-limiter
+requests
