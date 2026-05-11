@@ -87,7 +87,9 @@ if (chatWindow) {
     if (!valid) return;
 
     socket = io(SOCKET_URL, {
-        transports: ['websocket', 'polling'],
+        transports: ['polling', 'websocket'],
+        upgrade: true,
+        rememberUpgrade: false,
         reconnection: true,
         reconnectionAttempts: Infinity,
         reconnectionDelay: 1000,
@@ -179,8 +181,54 @@ function initializeSocketEvents() {
     }
 }
 
+// --- Cloudflare ---
+
+let captchaVerified = false;
+let turnstileToken = null;
+
+window.captchaSolved = function(token) {
+
+    captchaVerified = true;
+    turnstileToken = token;
+
+    const joinBtn = document.getElementById("join-btn");
+
+    if (joinBtn) {
+        joinBtn.style.display = "block";
+    }
+};
+
 // --- 4. LOGIN LOGIC ---
 const loginForm = document.getElementById('login-form');
+
+function isSuspiciousUser() {
+
+    if (navigator.webdriver) {
+        return true;
+    }
+
+    if (!navigator.cookieEnabled) {
+        return true;
+    }
+
+    return false;
+}
+
+const joinBtn = document.getElementById("join-btn");
+const captchaBox = document.getElementById("captcha-box");
+
+if (joinBtn && captchaBox) {
+
+    if (isSuspiciousUser()) {
+
+        captchaBox.style.display = "block";
+
+    } else {
+
+        joinBtn.style.display = "block";
+    }
+}
+
 if (loginForm) {
     loginForm.onsubmit = async (e) => {
         e.preventDefault();
@@ -195,7 +243,10 @@ if (loginForm) {
             const response = await API("/login-user", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: usernameInput })
+                body: JSON.stringify({
+                    username: usernameInput,
+                    turnstileToken
+                })
             });
 
             const data = await response.json();

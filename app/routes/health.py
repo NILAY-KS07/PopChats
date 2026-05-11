@@ -10,9 +10,10 @@ def health():
         "ENV": ENV,
         "has_secret": bool(os.environ.get("SECRET_KEY")),
         "uptime-hint": "running",
-        "status": "running"
+        "status": "running",
+        "cloudlflare": bool(os.environ.get("TURNSTILE_SECRET_KEY")),
     }
-
+    
 @health_bp.route('/api/')
 @health_bp.route('/api')
 def home():

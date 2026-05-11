@@ -6,6 +6,7 @@
     <title>PopChats | Login</title>
     <link rel="stylesheet" href="static/style.css">
     <link rel="icon" type="image/png" href="static/favicon.png">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body class="center-mode">
@@ -29,7 +30,24 @@
                 
                 <div id="error-message" class="error-popup" style="color: #ff4444; margin-bottom: 10px; font-size:10px; display:none;"></div>
                 
-                <button type="submit" class="primary-btn">Join Chat!</button>
+                <div id="captcha-box" style="display:none; margin-bottom:15px;">
+
+    <div
+        class="cf-turnstile"
+        data-sitekey="0x4AAAAAADNSIuUvjU-alcwp"
+        data-callback="captchaSolved"
+        data-size="flexible">
+    </div>
+
+</div>
+
+        <button
+            type="submit"
+            id="join-btn"
+            class="primary-btn"
+            style="display:none;">
+            Join Chat!
+        </button>
 
                 <div class="rules-box">
                     <a href="rules.html">Read Chat Rules Before Entering</a>
