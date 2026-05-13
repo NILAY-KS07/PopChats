@@ -61,24 +61,22 @@ def login_user():
     if not is_clean(username):
         return jsonify({"error": "Invalid username."}), 400
 
-    #First through in, If a user is already logged in but changing rooms, directly let it in.
     if session.get('username') == username:
         return jsonify({"success": True}), 200
 
-        try:
-            with get_db() as conn:
-                conn.execute(
-                    'INSERT INTO users (username) VALUES (?)',
-                    (username,)
-                )
-                conn.commit()
+    try:
+        with get_db() as conn:
+            conn.execute(
+                'INSERT INTO users (username) VALUES (?)',
+                (username,)
+            )
+            conn.commit()
 
-        except sqlite3.IntegrityError:
-            return jsonify({
-                'error': 'Username already active'
-            }), 409
+    except sqlite3.IntegrityError:
+        return jsonify({
+            'error': 'Username already active'
+        }), 409
 
-    #Second through in, If a user is new 
     session['username'] = username
     return jsonify({"success": True}), 200
 
