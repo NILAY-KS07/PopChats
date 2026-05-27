@@ -9,23 +9,29 @@
     <link rel="icon" type="image/png" href="static/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
-<body class="center-mode">
+<body class="error-mode">
+<div class="error-background"></div>
+<section class="error-wrapper">
 
-<div class="auth-container">
-    <div class="auth-card" style="text-align:center;">
+    <div class="error-badge">
+        404
+    </div>
 
-        <h1 style="font-size:4rem;">404</h1>
+    <h1 class="error-title">
+        Oops! This page couldn't be found.
+    </h1>
 
-        <p style="margin:20px 0; color:var(--text-dim);">
-            Oops! Looks like this room vanished into the void.
-        </p>
+    <p class="error-subtitle">
+        The conversation may have expired, the room was removed,
+        or the link simply doesn't exist anymore.
+    </p>
 
-        <a href="index.html" class="primary-btn" style="text-decoration:none;">
+    <div class="error-actions">
+        <a href="index.html" class="primary-btn">
             Return Home
         </a>
-
     </div>
-</div>
 
+</section>
 </body>
 </html>

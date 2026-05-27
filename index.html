@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="static/style.css">
     <link rel="icon" type="image/png" href="static/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <nav class="nav">
@@ -22,7 +23,7 @@
     <header class="hero">
         <div class="container">
             <h1 class="main-title">Connect Without <span class="accent">Trace.</span></h1>
-            <p class="hero-subtitle">Truly anonymous, secure, and public discussions. No signups, no logs, just freedom of speech.</p>
+            <p class="hero-subtitle">Realtime anonymous conversations without accounts, profiles, or endless data collection. Join public rooms or create temporary spaces instantly.</p>
             <div class="hero-cta">
                 <button class="primary-btn" onclick="window.location.href='rooms.html'">Get Started, it's Free!</button>
             </div>
@@ -32,23 +33,106 @@
     <section class="features-section">
         <div class="container grid">
             <div class="feature-box reveal-left">
-                <div class="feature-icon">🔒</div>
+                <div class="feature-icon">
+                    <i data-lucide="shield"></i>
+                </div>
                 <h3>Absolute Privacy</h3>
-                <p>Our platform is built on the principle of total anonymity. We don't track IPs or store metadata on purpose. Your identity stays yours.</p>
+                <p>Our platform is built on the principle of total anonymity. We don't store IPs or metadata on purpose. Your identity stays yours.</p>
             </div>
             <div class="feature-box reveal-up">
-                <div class="feature-icon">⚡</div>
+                <div class="feature-icon">
+                    <i data-lucide="zap"></i>
+                </div>
                 <h3>Ephemeral Chats</h3>
                 <p>Messages exist only as long as they need to. Enjoy temporary, disposable environments that vanish without a trace.</p>
             </div>
             <div class="feature-box reveal-right">
-                <div class="feature-icon">🌐</div>
+                <div class="feature-icon">
+                    <i data-lucide="globe"></i>
+                </div>
                 <h3>Global Public Hub</h3>
                 <p>Join trending discussions or create your own. Connect with voices from around the world in real-time, instantly.</p>
             </div>
         </div>
     </section>
+    <section class="info-section">
+    <div class="container info-grid">
 
+        <div class="info-text">
+            <span class="section-tag">Why PopChats?</span>
+
+            <h2>Built for fast, lightweight conversations.</h2>
+
+            <p>
+                PopChats focuses on simplicity. No feeds, no followers,
+                no permanent identities. Just realtime public and custom
+                chat rooms that work instantly across devices.
+            </p>
+
+            <p>
+                The platform is designed around ephemeral communication,
+                low friction access, and minimal data retention while still
+                maintaining abuse protection and infrastructure stability.
+            </p>
+        </div>
+
+        <div class="info-points">
+
+            <div class="info-card">
+                <h3>Realtime Infrastructure</h3>
+                <p>
+                    Socket-based messaging with optimized reconnect handling
+                    and lightweight room architecture.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h3>Privacy Focused</h3>
+                <p>
+                    No public profiles, follower systems, or unnecessary
+                    personal data collection.
+                </p>
+            </div>
+
+            <div class="info-card">
+                <h3>Temporary by Design</h3>
+                <p>
+                    Empty rooms disappear automatically to keep the platform
+                    clean, fast, and self-maintaining.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+<section class="steps-section">
+    <div class="container">
+
+        <span class="section-tag">How It Works</span>
+
+        <div class="steps-grid">
+
+            <div class="step-box">
+                <span>01</span>
+                <h3>Choose a Room</h3>
+                <p>Join public discussions or explore custom rooms.</p>
+            </div>
+
+            <div class="step-box">
+                <span>02</span>
+                <h3>Pick a Username</h3>
+                <p>No accounts required. Enter and chat instantly.</p>
+            </div>
+
+            <div class="step-box">
+                <span>03</span>
+                <h3>Talk Freely</h3>
+                <p>Realtime communication designed for speed and simplicity.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
 <footer class="footer">
     <div class="container footer-content">
 
@@ -58,7 +142,7 @@
              height="40" width="40">
 
         <div class="footer-main">
-            PopChats v1.2
+            PopChats v1.3
         </div>
 
         <div class="footer-credit">
@@ -80,5 +164,8 @@
 
     </div>
 </footer>
+<script>
+    lucide.createIcons();
+</script>
 </body>
 </html>

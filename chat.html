@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="static/style.css">
     <link rel="icon" type="image/png" href="static/favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="chat-mode">
 
@@ -22,7 +23,7 @@
             </div>
             <div class="status-group">
                 <div class="info">i</div>
-                <div class="user-count">👥 <span id="count"></span> Online</div>
+                <div class="user-count"><i data-lucide="users"></i> <span id="count"></span></div>
                 <div class="server-status active"><span></span> Active</div>
             </div>
         </div>
@@ -78,6 +79,9 @@
     if (roomNameEl) {
         roomNameEl.innerText = `#${currentRoom}`;
     }
+</script>
+<script>
+    lucide.createIcons();
 </script>
 </body>
 </html>

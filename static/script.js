@@ -2,7 +2,6 @@ const isLocal = window.location.hostname === "127.0.0.1" || window.location.host
 const API_BASE = isLocal ? "http://127.0.0.1:5000" : "";
 const SOCKET_URL = isLocal ? "http://127.0.0.1:5000" : undefined;
 
-// --- 1. STATE & PERSISTENCE ---
 const params = new URLSearchParams(window.location.search);
 const roomFromURL = params.get("room");
 
@@ -20,7 +19,6 @@ const API = (path, options = {}) => {
         ...(options.headers || {})
     };
 
-    // Only attach JSON header if body exists
     if (options.body) {
         headers['Content-Type'] = 'application/json';
     }
@@ -32,7 +30,6 @@ const API = (path, options = {}) => {
     });
 };
 
-// --- 2. UI HELPERS ---
 const updateStatus = (statusClass, text) => {
     const status = document.querySelector('.server-status');
     if (status) {
@@ -58,12 +55,10 @@ const scrollToBottom = () => {
     }
 };
 
-// --- 3. CHAT LOGIC ---
 let socket = null;
 const chatWindow = document.getElementById('chat-window');
 
 if (chatWindow) {
-    // Security check
     async function verifySession() {
         try {
             const res = await API('/me');
@@ -150,7 +145,6 @@ function initializeSocketEvents() {
     socket.on('connect_error', () => updateStatus('connecting', 'Connection Failed'));
 }
 
-    // --- MESSAGE SENDING & COOLDOWN ---
     const messageForm = document.querySelector('.input-wrapper');
     const messageInput = document.getElementById('user-msg');
     let isCooldown = false;
@@ -163,14 +157,12 @@ function initializeSocketEvents() {
 
             if (isCooldown || !msg || !socket.connected) return;
 
-            // Send room name with message so backend knows where it goes
             socket.emit('send_message', { 
                 message: msg,  
             });
 
             messageInput.value = '';
             
-            // Cooldown Logic
             isCooldown = true;
             if (sendBtn) sendBtn.style.opacity = "0.5";
             setTimeout(() => {
@@ -180,8 +172,6 @@ function initializeSocketEvents() {
         };
     }
 }
-
-// --- Cloudflare ---
 
 let captchaVerified = false;
 let turnstileToken = null;
@@ -198,7 +188,6 @@ window.captchaSolved = function(token) {
     }
 };
 
-// --- 4. LOGIN LOGIC ---
 const loginForm = document.getElementById('login-form');
 
 function isSuspiciousUser() {
@@ -220,11 +209,8 @@ const captchaBox = document.getElementById("captcha-box");
 if (joinBtn && captchaBox) {
 
     if (isSuspiciousUser()) {
-
         captchaBox.style.display = "block";
-
     } else {
-
         joinBtn.style.display = "block";
     }
 }
@@ -270,7 +256,6 @@ if (loginForm) {
     };
 }
 
-// --- 6. ROOM CREATION PAGE LOGIC ---
 const roomForm = document.getElementById('createRoomForm');
 if (roomForm) {
     roomForm.onsubmit = async (e) => {
