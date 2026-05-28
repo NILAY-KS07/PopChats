@@ -17,18 +17,15 @@ room_to_users = defaultdict(set)
 
 last_message_times = {}
 
-DEFAULT_ROOMS = {"public", "tech", "gaming", "sports"} # more to be added soon
+DEFAULT_ROOMS = {"public", "tech", "gaming", "sports", "music", "movies"} # more to be added soon
 
 # ===== CONNECT =====
 @socketio.on('connect')
 def handle_connect(auth):
-    auth = auth or {}
 
-    username = (auth.get('username') or '').strip()
+    username = session.get('username')
 
-    session_username = session.get('username')
-
-    if not username or username != session_username:
+    if not username:
         return False
 
     sid = request.sid
@@ -128,7 +125,8 @@ def handle_send_message(data):
 
     emit('receive_message', {
         'username': username,
-        'message': message
+        'message': message,
+        'sender_sid': request.sid
     }, to=room)
 
 @socketio.on('disconnect')

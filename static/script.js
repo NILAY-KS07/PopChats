@@ -90,10 +90,7 @@ if (chatWindow) {
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000,
         timeout: 20000,
-        withCredentials: true,
-        auth: {
-            username: currentUser
-        }
+        withCredentials: true
     });
 
     initializeSocketEvents();
@@ -108,7 +105,7 @@ function initializeSocketEvents() {
     });
 
     socket.on('receive_message', (data) => {
-        const isMe = data.username === currentUser;
+        const isMe = data.sender_sid === socket.id;
         const wrapper = document.createElement('div');
         wrapper.className = `message-wrapper ${isMe ? 'me' : ''}`;
         

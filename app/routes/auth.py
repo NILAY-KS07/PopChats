@@ -61,6 +61,14 @@ def login_user():
     if not is_clean(username):
         return jsonify({"error": "Invalid username."}), 400
 
+    if username[0].isdigit() or username[0] in {"@", "#", "$", "%", "&", "*"}:
+        return jsonify({"error": "Username cannot start with a digit or special character."}), 400
+
+    existing_session = session.get("username")
+
+    if existing_session and existing_session != username:
+        session.clear()
+
     if session.get('username') == username:
         return jsonify({"success": True}), 200
 
