@@ -89,6 +89,8 @@
 
         <h2>Create Room</h2>
 
+        <div class="roomModal">
+
         <div class="input-group">
             <label>Room Name</label>
             <input id="roomName" placeholder="e.g. Midnight Talks" autocomplete = "off">
@@ -107,14 +109,14 @@
 
         <button class="primary-btn" type="submit">Create</button>
 
-        <button 
-            class="primary-btn"
-            type="button"
-            style="background-color: var(--bg-dim);"
-            onclick="closeModal()"
-        >
-            Cancel
-        </button>
+        <button class="primary-btn" type="button" style="background-color: var(--bg-dim);" onclick="closeModal()">Cancel</button>
+    </div>
+
+        <div id="roomLoader" class="loader-container" style="display:none;">
+            <br>
+            <div class="pulse-ring"></div>
+                <p class="loading-text">Creating Room...</p>
+        </div>
 
     </form>
 </div>
@@ -141,7 +143,7 @@ function closeModal() {
              height="40" width="40">
 
         <div class="footer-main">
-            PopChats v1.3
+            PopChats v1.3.1
         </div>
 
         <div class="footer-credit">

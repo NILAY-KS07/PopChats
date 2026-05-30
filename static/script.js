@@ -256,30 +256,62 @@ if (loginForm) {
 const roomForm = document.getElementById('createRoomForm');
 if (roomForm) {
     roomForm.onsubmit = async (e) => {
-        e.preventDefault();
-        const rName = document.getElementById('roomName').value.trim();
-        const rDesc = document.getElementById('roomDesc').value.trim();
-        const errorEl = document.getElementById('roomFormError');
+    e.preventDefault();
 
-        try {
-            const response = await API("/check-roomname", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: rName, description: rDesc })
+    const rName = document.getElementById('roomName').value.trim();
+    const rDesc = document.getElementById('roomDesc').value.trim();
+    const errorEl = document.getElementById('roomFormError');
+
+    const loader = document.getElementById('roomLoader');
+    const roomModal = document.querySelector('.roomModal');
+
+    loader.style.display = 'flex';
+    roomModal.style.display = 'none';
+
+    roomForm.querySelectorAll("input, button").forEach(el => {
+        el.disabled = true;
+    });
+
+    try {
+        const response = await API("/check-roomname", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: rName,
+                description: rDesc
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            localStorage.setItem("current_room", rName);
+            window.location.href =
+                `login.html?room=${encodeURIComponent(rName)}`;
+        } else {
+
+            loader.style.display = 'none';
+            roomModal.style.display = 'block';
+
+            roomForm.querySelectorAll("input, button").forEach(el => {
+                el.disabled = false;
             });
-            const data = await response.json();
 
-            if (response.ok) {
-                localStorage.setItem("current_room", rName);
-                window.location.href = `login.html?room=${encodeURIComponent(rName)}`;
-            } else {
-                if (errorEl) {
-                    errorEl.innerText = data.error;
-                    errorEl.style.display = 'block';
-                }
+            if (errorEl) {
+                errorEl.innerText = data.error;
+                errorEl.style.display = 'block';
             }
-        } catch (err) {
-            alert("Error creating room.");
+        }
+    } catch (err) {
+
+        loader.style.display = 'none';
+        roomModal.style.display = 'block';
+
+        roomForm.querySelectorAll("input, button").forEach(el => {
+            el.disabled = false;
+        });
+
+        alert("Error creating room.");
         }
     };
 }
