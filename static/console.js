@@ -1,7 +1,7 @@
 if (!window.__POPCHATS_CONSOLE__) {
     window.__POPCHATS_CONSOLE__ = true;
 
-    console.log("\n")
+    console.log("\n");
     console.log(
       
 `██████╗  ██████╗ ██████╗  ██████╗██╗  ██╗ █████╗ ████████╗███████╗
@@ -12,7 +12,8 @@ if (!window.__POPCHATS_CONSOLE__) {
 ╚═╝      ╚═════╝ ╚═╝      ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝`
       
     );
-
+    console.log("\n");
+    
     console.log(
       "%cPopChats Developer Console",
       "color:#4f8cff;font-size:18px;font-weight:bold;"
@@ -25,4 +26,6 @@ if (!window.__POPCHATS_CONSOLE__) {
     console.warn(
       `Do not copy-paste random code snippets which you don't understand.`
     );
+
+    console.log("\n");
 }
