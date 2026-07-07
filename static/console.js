@@ -15,7 +15,7 @@ if (!window.__POPCHATS_CONSOLE__) {
     );
 
     console.log(
-      "%PopChats Developer Console",
+      "%cPopChats Developer Console",
       "color:#4f8cff;font-size:18px;font-weight:bold;"
     );
 
