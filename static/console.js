@@ -1,7 +1,7 @@
 if (!window.__POPCHATS_CONSOLE__) {
     window.__POPCHATS_CONSOLE__ = true;
 
-    console.log("\n\n\n")
+    console.log("\n")
     console.log(
       
 `██████╗  ██████╗ ██████╗  ██████╗██╗  ██╗ █████╗ ████████╗███████╗
