@@ -1,7 +1,6 @@
 if (!window.__POPCHATS_CONSOLE__) {
     window.__POPCHATS_CONSOLE__ = true;
 
-    console.log("\n");
     console.log(
       
 `
