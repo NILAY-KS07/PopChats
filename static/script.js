@@ -1,6 +1,20 @@
-const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
-const API_BASE = isLocal ? "http://127.0.0.1:5000" : "";
-const SOCKET_URL = isLocal ? "http://127.0.0.1:5000" : undefined;
+const hostname = window.location.hostname;
+
+const isLocal =
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "::1" ||
+    /^192\.168\./.test(hostname) ||
+    /^10\./.test(hostname) ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(hostname);
+
+const API_BASE = isLocal
+    ? `http://${hostname}:5000`
+    : "";
+
+const SOCKET_URL = isLocal
+    ? `http://${hostname}:5000`
+    : undefined;
 
 const params = new URLSearchParams(window.location.search);
 const roomFromURL = params.get("room");
@@ -219,8 +233,38 @@ if (loginForm) {
         const loader = document.getElementById('loader');
         const errorDiv = document.getElementById('error-message');
 
+        if (errorDiv) errorDiv.style.display = 'none';
         if (loader) loader.style.display = 'flex';
         loginForm.style.display = 'none';
+
+        const stages = [
+            "Starting server...",
+            "Connecting...",
+            "Preparing chat...",
+            "Almost there..."
+        ];
+
+        let stage = 0;
+        let skeletonTimer = null;
+        let stageTimer = null;
+
+        skeletonTimer = setTimeout(() => {
+            document.body.classList.remove("center-mode");
+            document.body.classList.add("chat-mode");
+
+            const pageRoot = document.getElementById("page-root");
+            const template = document.getElementById("chat-loading-template");
+            if (pageRoot && template) {
+                pageRoot.innerHTML = template.innerHTML;
+            }
+
+            stageTimer = setInterval(() => {
+                if (stage < stages.length - 1) stage++;
+                const el = document.getElementById("loading-stage");
+                if (el) el.textContent = stages[stage];
+            }, 7000);
+
+        }, 5000);
 
         try {
             const response = await API("/login-user", {
@@ -234,21 +278,29 @@ if (loginForm) {
 
             const data = await response.json();
 
+            clearTimeout(skeletonTimer);
+            if (stageTimer) clearInterval(stageTimer);
+
             if (response.ok) {
                 localStorage.setItem("username", usernameInput);
-                window.location.href = `chat.html?room=${currentRoom}`;
+                window.location.href = `chat.html?room=${encodeURIComponent(currentRoom)}`;
             } else {
                 if (loader) loader.style.display = 'none';
                 loginForm.style.display = 'block';
                 if (errorDiv) {
-                    errorDiv.innerText = data.error;
+                    errorDiv.innerText = data.error || "Invalid details. Please try again.";
                     errorDiv.style.display = 'block';
                 }
             }
         } catch (err) {
+            clearTimeout(skeletonTimer);
+            if (stageTimer) clearInterval(stageTimer);
             if (loader) loader.style.display = 'none';
             loginForm.style.display = 'block';
-            alert("Server connection failed.");
+            if (errorDiv) {
+                errorDiv.innerText = "Server couldn't be reached. Please try again later.";
+                errorDiv.style.display = 'block';
+            }
         }
     };
 }

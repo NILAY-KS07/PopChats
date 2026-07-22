@@ -140,6 +140,76 @@ body::before {
     letter-spacing: 0.5px;
 }
 
+.hidden{
+    display:none;
+}
+
+.shimmer{
+
+    background:
+    linear-gradient(
+    90deg,
+    #1c2028 25%,
+    #303642 50%,
+    #1c2028 75%
+    );
+
+    background-size:300% 100%;
+    animation:shimmer 1.6s infinite;
+    border-radius:8px;
+}
+
+@keyframes shimmer{
+    0%{
+        background-position:150%;
+    }
+
+    100%{
+        background-position:-150%;
+    }
+}
+
+.sk-messages{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.sk-msg{
+    display:flex;
+    flex-direction:column;
+    height: 64px;
+    width:220px;
+}
+
+.sk-name{
+    width:55px;
+    height:12px;
+    margin-bottom:6px;
+}
+
+.sk-input{
+    display:flex;
+    margin-top:0;
+    gap:15px;
+}
+
+.sk-inputbox{
+    flex:1;
+    height:52px;
+}
+
+.sk-count{
+    width:22px;
+    height:14px;
+    border-radius:4px;
+}
+
+.sk-room{
+    width:80px;
+    height:18px;
+}
+
 .container {
     max-width: 1100px;
     margin: 0 auto;

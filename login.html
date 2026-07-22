@@ -25,6 +25,7 @@
     </script>
 </head>
 <body class="center-mode">
+    <div id="page-root">
     <nav class="nav">
         <div class="container">
             <a href="rooms.html" class="logo">Pop<span>Chats</span></a>
@@ -71,11 +72,13 @@
             </div>
         </form>
 
-        <div id="loader" class="loader-container" style="display: none;">
+        <div id="loader" class="loader-container" style="display:none;">
             <div class="pulse-ring"></div>
-            <p class="loading-text">Hang Tight! We're getting you in...</p>
+            <p class="loading-text">
+                Hang Tight! We're getting you in...
+            </p>
         </div>
-    </div>
+</div>
 </div>
 
 <footer class="footer">
@@ -109,7 +112,51 @@
 
     </div>
 </footer>
-    
+</div>   
+<template id="chat-loading-template">
+    <nav class="nav chat-nav">
+        <div class="container nav-wrapper">
+            <div class="logo-group">
+                <div class="logo">Pop<span>Chats</span></div>
+                <div class="room-name shimmer sk-room"></div>
+            </div>
+            <div class="status-group">
+                <div class="user-count"><div class="shimmer sk-count"></div></div>
+                    <span id="loading-stage" style="color:#94a3b8;">Starting server...</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <main class="chat-container">
+        <div class="chat-window">
+            <br>
+            <div class="sk-messages">
+                <div class="sk-name shimmer"></div>
+                <div class="sk-msg shimmer"></div>
+            </div>
+            <div class="sk-messages">
+                <div class="sk-name shimmer"></div>
+                <div class="sk-msg shimmer"></div>
+            </div>
+            <div class="sk-messages">
+                <div class="sk-name shimmer"></div>
+                <div class="sk-msg shimmer"></div>
+            </div>
+            <div class="sk-messages">
+                <div class="sk-name shimmer"></div>
+                <div class="sk-msg shimmer"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="chat-input-area" style="margin-top:-60px;">
+        <div class="container">
+            <div class="input-wrapper" style="height:56px">
+                <div class="shimmer sk-input sk-inputbox"></div>
+            </div>
+        </div>
+    </footer>
+</template>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="static/script.js"></script>
 <script>
