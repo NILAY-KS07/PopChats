@@ -1,5 +1,3 @@
-# PopChats
-
 <p align="center">
   <img src="static/favicon.png" width="90">
 </p>
