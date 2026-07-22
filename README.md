@@ -5,7 +5,11 @@
 <h1 align="center">PopChats</h1>
 
 <p align="center">
-A real-time anonymous chat platform built with Flask, Socket.IO and vanilla JavaScript.
+Privacy-first • No Accounts Required
+</p>
+
+<p align="center">
+A real-time anonymous chat platform powered by Flask, Socket.IO and vanilla JavaScript.
 </p>
 
 <p align="center">
@@ -28,9 +32,11 @@ A real-time anonymous chat platform built with Flask, Socket.IO and vanilla Java
 
 ## 📖 Overview
 
-PopChats is a lightweight, privacy-focused anonymous chat platform that lets people join conversations instantly without creating an account. Users can enter public rooms or create temporary custom rooms while enjoying fast, real-time messaging powered by WebSockets.
+PopChats is a real-time anonymous chat platform that enables instant conversations without requiring accounts, emails, or personal information. Users can join public rooms or create temporary custom rooms while enjoying fast, WebSocket-powered messaging in a privacy-first environment.
 
 The project follows a decoupled architecture with the frontend hosted on **Vercel** and the backend running on **Render**, providing a responsive experience while keeping deployment simple.
+
+**Note**: *PopChats intentionally avoids storing chat history. On the free Render deployment, the ephemeral filesystem also means locally stored SQLite data is not guaranteed to persist across deployments or instance restarts, reinforcing the platform's temporary nature.*
 
 ---
 
@@ -48,6 +54,14 @@ The project follows a decoupled architecture with the frontend hosted on **Verce
 
 ---
 
+## 🎯 Why PopChats?
+
+Most chat platforms require user accounts, profiles, and persistent identities. PopChats takes a different approach by focusing on temporary, anonymous conversations where users can connect instantly without registration or leaving behind permanent data.
+
+The project was built to explore real-time communication, WebSockets, session-based authentication, and scalable deployment using a modern Flask stack.
+
+---
+
 ## 🏗 Architecture
 
 ```text
@@ -62,20 +76,23 @@ Vercel (Frontend)
 Render (Flask Backend)
     │
     ▼
-SQLite
+SQLite (Temporary Metadata)
 ```
 
 ---
 
 ## 🛠 Tech Stack
 
-| Category | Technology |
-|----------|------------|
-| Backend | Flask, Flask-SocketIO, Gunicorn, gevent |
-| Frontend | HTML5, CSS3, JavaScript |
-| Database | SQLite (WAL Mode) |
-| Security | Flask-Limiter, Cloudflare Turnstile, CORS |
-| Deployment | Vercel + Render |
+| Category   | Technology                                      |
+| ---------- | ----------------------------------------------- |
+| Backend    | Flask                                           |
+| Real-Time  | Flask-SocketIO                                  |
+| Async      | Gunicorn + gevent                               |
+| Frontend   | HTML5, CSS3, JavaScript                         |
+| Database   | SQLite (WAL Mode)                               |
+| Security   | Flask-Limiter, Cloudflare Turnstile, Flask-CORS |
+| Deployment | Vercel + Render                                 |
+
 
 ---
 
@@ -137,8 +154,7 @@ The backend starts on **localhost:5000**. Serve the frontend using any static se
 
 - **Frontend:** Vercel
 - **Backend:** Render
-- **Communication:** REST APIs + Socket.IO through Vercel rewrites
-
+- **Communication:** API and Socket.IO requests are proxied from Vercel to the Render backend using URL rewrites.
 ---
 
 ## 🚧 Future Improvements
