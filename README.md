@@ -4,7 +4,7 @@
   <img src="static/favicon.png" width="90">
 </p>
 
-<h1 align="center">💬 PopChats</h1>
+<h1 align="center">PopChats</h1>
 
 <p align="center">
 A real-time anonymous chat platform built with Flask, Socket.IO and vanilla JavaScript.
@@ -47,16 +47,6 @@ The project follows a decoupled architecture with the frontend hosted on **Verce
 - 📱 Responsive UI for desktop and mobile
 - 🧹 Automatic cleanup of inactive custom rooms
 - 🌙 Modern dark theme interface
-
----
-
-## 📸 Screenshots
-
-> Add screenshots here.
-
-| Landing | Chat |
-|---------|------|
-| `docs/images/landing.png` | `docs/images/chat.png` |
 
 ---
 
@@ -170,6 +160,4 @@ Contributions, bug reports and feature suggestions are always welcome. Feel free
 
 ## 📄 License
 
-This project was created by **Nilay Kumar Shrivastava** as a portfolio and learning project.
-
-If you found this project helpful, consider leaving a ⭐ on the repository.
+This project was created by **Nilay Kumar Shrivastava** as a portfolio and learning project. It's built as a **Proof of Concept (PoC)**. All rights are reserved.
