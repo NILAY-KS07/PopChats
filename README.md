@@ -13,19 +13,17 @@ A real-time anonymous chat platform powered by Flask, Socket.IO and vanilla Java
 </p>
 
 <p align="center">
-<a href="https://popchats.vercel.app/">🌐 Live Demo</a> •
+<a href="https://popchats.vercel.app/">🌐 WA Link</a> •
 <a href="https://github.com/NILAY-KS07/PopChats">📦 Repository</a>
 </p>
 
 <p align="center">
-
-![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
-![Flask](https://img.shields.io/badge/Flask-black?logo=flask)
-![Socket.IO](https://img.shields.io/badge/Socket.IO-Realtime-black?logo=socketdotio)
-![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite)
-![Render](https://img.shields.io/badge/Backend-Render-46E3B7?logo=render)
-![Vercel](https://img.shields.io/badge/Frontend-Vercel-black?logo=vercel)
-
+  <img src="https://img.shields.io/badge/Python-3.11-blue?logo=python" />
+  <img src="https://img.shields.io/badge/Flask-black?logo=flask" />
+  <img src="https://img.shields.io/badge/Socket.IO-Realtime-black?logo=socketdotio" />
+  <img src="https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite" />
+  <img src="https://img.shields.io/badge/Backend-Render-46E3B7?logo=render" />
+  <img src="https://img.shields.io/badge/Frontend-Vercel-black?logo=vercel" />
 </p>
 
 ---
@@ -36,7 +34,7 @@ PopChats is a real-time anonymous chat platform that enables instant conversatio
 
 The project follows a decoupled architecture with the frontend hosted on **Vercel** and the backend running on **Render**, providing a responsive experience while keeping deployment simple.
 
-**Note**: *PopChats intentionally avoids storing chat history. On the free Render deployment, the ephemeral filesystem also means locally stored SQLite data is not guaranteed to persist across deployments or instance restarts, reinforcing the platform's temporary nature.*
+> **Note**: *PopChats intentionally avoids storing chat history. On the free Render deployment, the ephemeral filesystem also means locally stored SQLite data is not guaranteed to persist across deployments or instance restarts, reinforcing the platform's temporary nature.*
 
 ---
 
