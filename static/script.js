@@ -44,13 +44,15 @@ const API = (path, options = {}) => {
     });
 };
 
-(async function awake() {
-    try {
-        await API('/ping'); 
-    } catch {
-        // Fallback, handled by other routes
-    }
-})();
+document.addEventListener('DOMContentLoaded', () => {
+    (async function awake() {
+        try {
+            await API('/ping');
+        } catch (e) {
+            // Fallback, handled by other routes
+        }
+    })();
+});
 
 
 const updateStatus = (statusClass, text) => {
