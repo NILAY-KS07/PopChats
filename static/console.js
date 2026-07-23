@@ -1,3 +1,5 @@
+// --- Console Logo ---
+
 if (!window.__POPCHATS_CONSOLE__) {
     window.__POPCHATS_CONSOLE__ = true;
 
@@ -34,3 +36,19 @@ if (!window.__POPCHATS_CONSOLE__) {
 
     console.log("\n");
 }
+// --- Version Control ---
+
+document.addEventListener("DOMContentLoaded", () => {
+    fetch('package.json')
+        .then(res => res.json())
+        .then(data => {
+            if (data.version) {
+                document.querySelectorAll('.app-ver').forEach(el => {
+                    el.textContent = `v${data.version}`;
+                });
+            }
+        })
+        .catch(() => {
+          //Fallback to hardcoded value
+        });
+});

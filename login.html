@@ -91,7 +91,7 @@
              height="40" width="40">
 
         <div class="footer-main">
-            PopChats v1.3.2
+            PopChats <span class="app-ver">v1.3.2</span>
         </div>
 
         <div class="footer-credit">
@@ -167,6 +167,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (roomEl) {
         roomEl.innerText = currentRoom.charAt(0).toUpperCase() + currentRoom.slice(1) + " Room";
+    }
+});
+</script>
+<script>
+    window.addEventListener("pageshow", (event) => {
+    const isBackNavigation = event.persisted || 
+        (window.performance && window.performance.navigation.type === 2);
+
+    if (isBackNavigation) {
+        window.location.reload();
     }
 });
 </script>

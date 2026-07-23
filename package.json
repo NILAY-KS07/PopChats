@@ -1,0 +1,22 @@
+{
+  "name": "PopChats",
+  "version": "1.4.1",
+  "description": "<p align=\"center\">\r   <img src=\"static/favicon.png\" width=\"90\">\r </p>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx http-server -c-1 -p 5500 --cors",
+    "start": "npx http-server -c-1 -p 5500 --cors"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NILAY-KS07/PopChats.git"
+  },
+  "keywords": [],
+  "author": "Nilay Kumar Shrivastav",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NILAY-KS07/PopChats/issues"
+  },
+  "homepage": "https://github.com/NILAY-KS07/PopChats#readme"
+}
