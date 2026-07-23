@@ -238,7 +238,7 @@ if (loginForm) {
         loginForm.style.display = 'none';
 
         const stages = [
-            "Starting server...",
+            "Joining Server...",
             "Connecting...",
             "Preparing chat...",
             "Almost there..."
