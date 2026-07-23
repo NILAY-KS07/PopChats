@@ -39,7 +39,7 @@ if (!window.__POPCHATS_CONSOLE__) {
 // --- Version Control ---
 
 document.addEventListener("DOMContentLoaded", () => {
-    fetch('package.json')
+    fetch('version.json')
         .then(res => res.json())
         .then(data => {
             if (data.version) {
